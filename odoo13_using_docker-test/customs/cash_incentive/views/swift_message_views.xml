@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- swift_message Form View -->
+	<record id="view_swift_message_form" model="ir.ui.view">
+        <field name="name">swift.message.form</field>
+        <field name="model">swift.message</field>
+        <field name="arch" type="xml">
+            <form string="SWIFT Message Form">
+                <header>
+                    <button name="action_confirm" id="action_confirm" class="btn-primary"
+                            type="object" string="Confirm" invisible="state != 'draft'" />
+                    <button name="action_draft" id="action_draft" class="btn-secondary"
+                            type="object" string="Set to Draft" invisible="state in ['draft', 'pay', 'cancel']" />
+                    <button name="action_en_rate" id="action_en_rate" class="btn-primary"
+                            type="object" string="Encashment Rate"  invisible="state != 'confirm'" />
+                    <button name="action_receivable_journal" id="action_receivable_journal" class="btn-primary"
+                            type="object" string="Encashment" invisible="state != 'er'"/>
+                    <!--<button style="background: #1f9eaa !important;border: 1px solid #ccc;
+                                       color: #ffffff" name="action_incentive_invoice" id="action_incentive_invoice" class="btn-primary"
+                            type="object" string="Invoices" />-->
+                    <button name="action_cancel" confirm="Are you sure you want to Cancel?" type="object" string="Cancel" invisible="state != 'draft'" />
+
+                   <field name="state" widget="statusbar" statusbar_visible="draft,confirm,er,pay"/>
+
+
+
+                        <!--<button style="background: #1f9eaa !important;border: 1px solid #ccc;
+                                        color: #ffffff" class="oe_stat_button" name="action_incentive_invoice"
+                            type="object" icon="fa-shopping-cart" help="Invoices for this swift">
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="inv_count" widget="statinfo" nolabel="1" class="mr4"/>
+                                </span>
+                                <span class="o_stat_text">Invoices</span>
+                            </div>
+                        </button>-->
+                </header>
+                <sheet>
+                    <div  class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" name="action_incentive_invoice"
+                            type="object" icon="fa-file-text" help="Invoices for this SWIFT" >
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="inv_count" widget="statinfo" nolabel="1" class="mr4"/>
+                                </span>
+                                <span class="o_stat_text">Invoices</span>
+                            </div>
+                        </button>
+                        <button class="oe_stat_button" name="action_invoice_files"
+                            type="object" icon="fa-folder-open" help="Invoices files for this SWIFT" >
+                            <div class="o_field_widget o_stat_info">
+                                <span class="o_stat_value">
+                                    <field name="inv_file_count" widget="statinfo" nolabel="1" class="mr4"/>
+                                </span>
+                                <span class="o_stat_text">Cash Incentive Files</span>
+                            </div>
+                        </button>
+
+                        <button name="action_account_move_journal"
+                                class="oe_stat_button"
+                                icon="fa-bars"
+                                type="object"
+                                string="Journal Entries"/>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code" readonly="1" invisible="code == False"/>
+                            <field name="date" required="1" readonly="state != 'draft'"/>
+                            <field required="1" name="currency_id" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}"  readonly="state != 'draft'"/>
+                            <field name="bank_id" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}" required="1" readonly="state != 'draft'"/>
+                            <field name="is_journal_created" invisible="1"/>
+                            <field name="partner_id" required="1" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}" readonly="state != 'draft'"/>
+                            <field name="swift_customer_name" required="1"/>
+                            <field name="remiter_bank_name" readonly="state != 'draft'"/>
+                            <field name="remiter_bank_address"  readonly="state != 'draft'"/>
+                            <field name="incentive_deadline" readonly="1" force_save="1" />
+                            <field name="remaining_days" readonly="1" decoration-danger="remaining_days &lt; 31"/>
+                            <field name="inv_names" readonly="1" force_save="1"/>
+                        </group>
+
+                        <group >
+                            <field name="inv_count" readonly="1" force_save="1" invisible="1"/>
+                            <field name="invoice_amt" readonly="1" force_save="1" style="font-weight:bold"/>
+                            <field name="invoice_amt_bdt" readonly="1" force_save="1" />
+                            <br/>
+                            <br/>
+                            <field name="swift_amt" readonly="1" force_save="1" style="font-weight:bold"/>
+                            <field name="swift_amt_bdt" readonly="1" force_save="1"/>
+                            <field readonly="1" force_save="1" name="encashment_charge" style="font-weight:bold"/>
+                            <field readonly="1" force_save="1" name="encashment_charge_bdt" />
+                            <br/>
+                            <br/>
+                            <field readonly="1" force_save="1" name="total_swift_amt" style="font-weight:bold"/>
+                            <field readonly="1" force_save="1" name="total_swift_amt_bdt" />
+                            <br/>
+                            <br/>
+                            <field name="encashment_rate_bdt" readonly="1" force_save="1"/>
+                            <field name="encashment_rate_amnt" readonly="1" force_save="1"/>
+
+                            <!--<field readonly="1" force_save="1" name="swift_rate_bdt" />-->
+
+                            <br/>
+                            <br/>
+                            <field name="od_sight_rate" />
+                            <field name="incentive_rate_fc"  readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="date_credited_beneficiaries" />
+                            <br/>
+                            <br/>
+<!--                            <separator/>-->
+                            <field name="reporting_st_to_bb"/>
+                            <br/>
+                            <br/>
+<!--                            <separator/>-->
+                            <field name="ref_online_to_bb" />
+                        </group>
+                    </group>
+
+                    <footer>
+<!--                        <button style="background: #1f9eaa !important;border: 1px solid #ccc;-->
+<!--                                       padding: 14px 67px; margin-top: 60px; color: #ffffff; font-size: 22px;" class="oe_stat_button" name="action_incentive_invoice"-->
+<!--                            type="object" icon="fa-shopping-cart" help="Invoices for this swift">-->
+<!--                            <div class="o_field_widget o_stat_info">-->
+<!--                                <span class="o_stat_value">-->
+<!--                                    <field name="inv_count" widget="statinfo" nolabel="1" class="mr4"/>-->
+<!--                                </span>-->
+<!--                                <span class="o_stat_text">Invoices</span>-->
+<!--                            </div>-->
+<!--                        </button>-->
+<!--                        <button style="background: #1f9eaa !important;border: 1px solid #ccc;-->
+<!--                                        color: #ffffff" class="oe_stat_button" name="action_incentive_invoice"-->
+<!--                            type="object" icon="fa-shopping-cart" help="Invoices for this swift">-->
+<!--                            <div class="o_field_widget o_stat_info">-->
+<!--                                <span class="o_stat_value">-->
+<!--                                    <field name="inv_count" widget="statinfo" nolabel="1" class="mr4"/>-->
+<!--                                </span>-->
+<!--                                <span class="o_stat_text">Invoices</span>-->
+<!--                            </div>-->
+<!--                        </button>-->
+
+<!--                        <button string="upload" type="object" name="file_upload" />-->
+
+<!--                        <button attrs="{'invisible': ['|',('state', '!=', 'er'),('is_journal_created', '=', True)]}" style="background: #599bb9 !important;border: 1px solid #ccc; margin-left: 6px;-->
+<!--                                       padding: 14px 67px; margin-top: 60px; color: #ffffff; font-size: 22px;" class="oe_stat_button"-->
+<!--                                name="action_receivable_journal"-->
+<!--                            type="object">-->
+<!--                            <div class="o_field_widget o_stat_info">-->
+<!--                                <span class="o_stat_text">Create Receivable Journal</span>-->
+<!--                            </div>-->
+<!--                        </button>-->
+
+<!--                        <button  style="background: #599bb9 !important;border: 1px solid #ccc;-->
+<!--                                       padding: 14px 67px; margin-top: 60px; color: #ffffff; font-size: 22px;"-->
+<!--                                name="action_incentive_invoice" id="action_open_swift_wizard"-->
+<!--                                type="object" icon="fa-arrow-right"  string="Invoices" attrs="{'invisible': [('state', 'in', ['cancel'])]}"/>-->
+                    </footer>
+
+                    <separator/>
+                    <group string="Attachments">
+                        <group>
+                            <field name="swift_file" filename="swift_file_name"/>
+                        </group>
+                        <group>
+                            <field name="ict_file" filename="ict_file_name"/>
+                        </group>
+                        <group>
+                            <field name="rate_file" filename="rate_file_name"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <!--Forwarding Template-->
+                        <page class="cash_incentive_tab_node" style="background:#d2d6ff" string="Forwarding Letter">
+                            <button context="{'type': 'fl', 'with_head':True}" name="action_print_with_head" style="margin-right:10px;"
+							        string="Print With Letter Head" type="object" class="btn-primary mx-1"/>
+                            <button context="{'type': 'fl', 'with_head':False}" name="action_print_with_head" style="margin-right:10px;"
+							        string="Print Without Letter Head" type="object" class="btn-primary mx-1"/>
+
+                            <button name="action_get_template_fl"
+							        string="Get Template" type="object" class="btn-primary mx-1"/>
+                            <br/>
+                            <br/>
+                            <field name="encashment_forwarding_letter" placeholder="Forwarding Letter..."/>
+                        </page>
+                        <page class="cash_incentive_tab_node" style="background:#e4ffe1" string="Form-C (ICT)">
+                            <button context="{'type': 'FORM_C', 'with_head':True}" name="action_print_with_head" style="margin-right:10px"
+							string="Print With Letter Head" type="object" class="btn-primary mx-1"/>
+                            <button context="{'type': 'FORM_C', 'with_head':False}" name="action_print_with_head" style="margin-right:10px;"
+							        string="Print Without Letter Head" type="object" class="btn-primary mx-1"/>
+
+                            <button name="action_refresh_form_c"
+							string="Get Template" type="object" class="btn-primary mx-1"/>
+                            <br/>
+                            <br/>
+                             <field string="Letter" name="form_c_description" placeholder="Letter Template..."/>
+                        </page>
+                        <page class="cash_incentive_tab_node" style="background:#feffc3" string="Other Information">
+                            <group>
+                                 <group>
+                                     <field readonly="1" force_save="1" name="encashment_bank_id" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}" />
+                                     <field readonly="1" force_save="1" name="encashment_date" />
+                                     <br/>
+                                     <br/>
+                                     <!--<field readonly="1" force_save="1" name="bank_charge" />-->
+                                    <!--<field readonly="1" force_save="1" name="other_charge" />-->
+                                     <!--<field readonly="1" force_save="1" name="bank_charge_bdt" />-->
+                                    <!--<field readonly="1" force_save="1" name="encashment_charge" />-->
+                                    <!--<field readonly="1" force_save="1" name="other_charge_bdt" />-->
+                                    <field readonly="1" force_save="1" name="remaining_swift_amount" />
+                                    <field readonly="1" force_save="1" name="remaining_swift_amount_bdt" />
+                                     <field name="difference_amnt_bdt" force_save="1" readonly="state != 'draft'"/>
+
+                                     <br/>
+                                     <br/>
+                                    <field readonly="1" force_save="1" name="partner_cr_acc_id" options="{'no_open':True}"/>
+                                    <field readonly="1" force_save="1" name="encashment_acc_id" options="{'no_open':True}"/>
+                                     <field readonly="1" force_save="1" name="erq_acc_id" options="{'no_open':True}"/>
+                                    <field readonly="1" force_save="1" name="bank_charge_acc_id" options="{'no_open':True}"/>
+                                    <field readonly="1" force_save="1" name="fc_gain_loss_acc_id" options="{'no_open':True}"/>
+
+                                </group>
+                                 <group>
+                                    <field name="erq_bank_id" readonly="1" force_save="1" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}" />
+                                    <field name="is_erq_applicable" readonly="1" force_save="1"/>
+                                    <field name="erq_percentage" readonly="1" force_save="1"/>
+                                    <field name="bdt_encashment_percentage" readonly="1" force_save="1"/>
+                                     <br/>
+                                     <br/>
+                                    <field name="erq_amount_fc" readonly="1" force_save="1"/>
+                                    <field name="fc_encashment_amount"  readonly="1" force_save="1"/>
+                                     <br/>
+                                     <br/>
+                                     <field name="inter_bank_rate_bdt" readonly="1" force_save="1"/>
+                                     <field name="erq_amount_bdt" readonly="1" force_save="1"/>
+                                    <field name="bdt_encashment_amount"  readonly="1" force_save="1"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+
+                </sheet>
+
+                 <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers" />
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+
+            </form>
+        </field>
+    </record>
+    
+    <!-- swift_message Tree View -->
+    <record id="view_swift_message_tree" model="ir.ui.view">
+         <field name="name">swift.message.tree</field>
+         <field name="model">swift.message</field>
+         <field name="arch" type="xml">
+             <tree decoration-info="(remaining_days  &gt; 30) and (remaining_days  &lt; 91)" decoration-danger="remaining_days &lt; 31"  string="SWIFT Message List">
+                <field name="code"/>
+                <field name="date"/>
+                 <field name="partner_id" />
+                 <field name="swift_customer_name" />
+                 <field name="bank_id" />
+                 <field name="currency_id"/>
+                 <field name="inv_count" string="Inv.Cnt"/>
+                 <field name="inv_names"/>
+                 <field name="swift_amt"/>
+                 <field name="remaining_days"/>
+                 <field name="incentive_file_no"/>
+                 <field name="preparation_date"/>
+                 <field name="state"/>
+                <field name="encashment_date" optional="hide"/>
+                <field name="encashment_rate_bdt" optional="hide"/>
+                <field name="encashment_bank_id" optional="hide"/>
+                <field name="od_sight_rate" optional="hide"/>
+                <field name="erq_amount_fc" optional="hide"/>
+             </tree>
+         </field>
+    </record>
+
+    <!-- Filter -->
+    <record id="view_swift_message_filter" model="ir.ui.view">
+        <field name="name">view.swift.message.filter</field>
+        <field name="model">swift.message</field>
+        <field name="arch" type="xml">
+            <search string="Search SWIFT Message">
+                <field name="inv_names" />
+                <field name="partner_id" filter_domain="[('partner_id', 'ilike', self)]" />
+                <field name="swift_customer_name" filter_domain="[('swift_customer_name', 'ilike', self)]" />
+                <field name="code" />
+                <field name="bank_id" filter_domain="[('bank_id', 'ilike', self)]"/>
+               <!-- <field name="inv_names" filter_domain="[('inv_names', 'ilike', self)]"/>-->
+
+                <!--<field name="incentive_file_no" filter_domain="[('incentive_file_no', 'ilike', self)]"/>-->
+                <field name="incentive_file_no" />
+                <!--<field name="preparation_date" />-->
+                <field name="date" filter_domain="[('date', 'ilike', self)]"/>
+                <field name="encashment_date" filter_domain="[('encashment_date', 'ilike', self)]"/>
+                <field name="encashment_bank_id" filter_domain="[('encashment_bank_id', 'ilike', self)]"/>
+
+                <filter name="encashment" string="Encashment Done?" domain="[('state', '=', 'pay')]"/>
+                <filter name="encashment1" string="Encashment Not Done?" domain="[('state', '!=', 'pay')]"/>
+                <separator/>
+                <!--<filter name="incentive" string="Incentive Filed?" domain="[('incentive_file_no', 'ilike', 'filled')]"/>
+                <filter name="incentive1" string="Incentive Not Filed?" domain="[('incentive_file_no', '=', 'not_filled')]"/>-->
+                <filter name="incentive" string="Incentive Filed?" domain="[('incentive_file_no', '!=', '')]"/>
+                <filter name="incentive1" string="Incentive Not Filed?" domain="[('incentive_file_no', '=', '')]"/>
+                <separator/>
+                <separator/>
+                <filter name="no_invoice" string="No Invoice" domain="[('inv_names', '=', '')]"/>
+                <filter name="have_invoice" string="Invoice Available" domain="[('inv_names', '!=', '')]"/>
+                <separator/>
+                <filter name="remaining" string="Upto 30 Days" domain="[('remaining_days', 'ilike', 30)]"/>
+                <filter name="remaining1" string="Upto 45 Days" domain="[('remaining_days', 'ilike', 45)]"/>
+                <filter name="remaining2" string="Upto 60 Days" domain="[('remaining_days', 'ilike', 60)]"/>
+                <filter name="remaining3" string="Upto 90 Days" domain="[('remaining_days', 'ilike', 90)]"/>
+                <filter name="remaining4" string="Upto 120 Days" domain="[('remaining_days', 'ilike', 120)]"/>
+                <filter name="remaining5" string="Upto 180 Days" domain="[('remaining_days', 'ilike', 180)]"/>
+
+                <group expand="1" string="Group By">
+                    <filter string="Customer" name="partner_id" context="{'group_by':'partner_id'}"/>
+                    <filter string="Date" name="date" context="{'group_by':'date'}"/>
+                    <filter string="Bank" name="bank_id" context="{'group_by':'bank_id'}"/>
+<!--                    <filter string="Encashed?" name="encashed" domain="[('state', '=', 'pay')]" context="{'group_by':'state'}"/>-->
+<!--                    <filter string="Incentive Filed?" name="incentive" context="{'group_by':'incentive_file_no'}"/>-->
+                </group>
+
+
+           </search>
+        </field>
+    </record>
+
+    <!--Action -->
+    <record id="swift_message_action" model="ir.actions.act_window">
+        <field name="name">SWIFT Message</field>
+        <field name="res_model">swift.message</field>
+        <field name="view_mode">tree,form</field>
+          <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Please Create SWIFT Message.
+            </p>
+        </field>
+    </record>
+
+    <!-- swift_message menu -->
+<!--    <menuitem id="sub_menu_swift_message_child" name="SWIFT Message" action="swift_message_action" parent="sub_menu_cash_incentive_invoice" sequence="10" />-->
+    <menuitem id="sub_menu_swift_message_child" name="SWIFT Message" action="swift_message_action" parent="menu_cash_incentive_head" sequence="1" />
+
+    <!--for accounting menu-->
+    <menuitem id="top_swift_menu_accounting" name="SWIFT" sequence="7" parent="account.menu_finance" />
+    <menuitem id="child_swift_message_menu" name="SWIFT Message" action="swift_message_action" sequence="1" parent="top_swift_menu_accounting" />
+    <!--<record model="ir.ui.menu"
+        id="account.menu_finance_payables">
+        <field name='sequence'>4</field>
+    </record>-->
+
+</odoo>

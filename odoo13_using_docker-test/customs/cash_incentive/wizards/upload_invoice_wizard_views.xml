@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <data>
+        <record id="view_inv_upload_form" model="ir.ui.view">
+            <field name="name">upload.invoice.wizard.form</field>
+            <field name="model">upload.invoice.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Upload Invoice">
+                    <group string="Attachments">
+                        <field  name="inv_file" filename="inv_file_name"/>
+                    </group>
+                    <group>
+						<field name="upload_des" invisible="upload_des == False" readonly="1"/>
+					</group>
+                    <footer>
+                        <button name="csv_file_upload" confirm="Are you sure you want to Upload?" string=" Upload Invoice" type="object" class="btn-primary fa fa-upload"/>
+                        <button name="action_sample_download" class="oe_highlight fa fa-download" type="object" string=" Sample"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- cash_incentive bank Form View -->
+	<record id="inherit_cash_incentive_bank_form" model="ir.ui.view">
+        <field name="name">cash.incentive.bank.form.inherit</field>
+        <field name="model">res.bank</field>
+        <field name="inherit_id" ref="base.view_res_bank_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[last()]" position="after">
+
+<!--                    <header>-->
+<!--                        <button name="action_print_with_head"-->
+<!--							string="Print With Letter Head" type="object"/>-->
+<!--                    </header>-->
+                    <group invisible="is_cash_incentive_bank == False">
+                        <group>
+<!--                            <field name="name" required="1"/>-->
+                            <field name="is_cash_incentive_bank" invisible="1"/>
+                            <field name="swift_code" />
+                            <field name="routing"/>
+                        </group>
+                        <group>
+                            <field name="code_prefix"/>
+                            <field name="code_suffix"/>
+                        </group>
+                    </group>
+                    <notebook invisible="is_cash_incentive_bank == False">
+                        <!--PRC Template-->
+                        <page string="PRC">
+                            <group>
+                                <group>
+                                    <field name="prc_ref_prefix"/>
+                                </group>
+                                <group>
+                                    <field name="prc_ref_suffix"/>
+                                </group>
+                            </group>
+                            <field name="prc_letter_description" placeholder="PRC Letter Description"/>
+                        </page>
+
+                        <!--Forwarding Letter for BASIS-->
+                        <page string="Forwarding Letter for BASIS">
+                            <group>
+                                <group>
+                                    <field name="flbs_ref_prefix"/>
+                                </group>
+                                <group>
+                                    <field name="flbs_ref_suffix"/>
+                                </group>
+                            </group>
+                            <field name="flbs_letter_description" placeholder="FLBS Letter Description"/>
+                        </page>
+
+                        <page string="Form Ka for BASIS">
+                            <field name="form_ka_basis_description" placeholder="Form Ka Basis Description"/>
+                        </page>
+
+                        <page string="Form Kha for BASIS">
+                            <group>
+                                <group>
+                                    <field name="form_kha_ref_prefix"/>
+                                </group>
+                                <group>
+                                    <field name="form_kha_ref_suffix"/>
+                                </group>
+                            </group>
+                            <!--Forwarding Letter for BASIS-->
+                            <field name="form_kha_basis_description" placeholder="Form Kha Basis Description"/>
+                        </page>
+
+                        <page string="Form-C (ICT)">
+                            <field name="form_c_description" placeholder="Form C Description"/>
+                        </page>
+
+                        <!--Forwarding Letter for BANK-->
+                        <page string="Forwarding Letter for Bank">
+                            <group>
+                                <group>
+                                    <field name="flbk_ref_prefix"/>
+                                </group>
+                                <group>
+                                    <field name="flbk_ref_suffix"/>
+                                </group>
+                            </group>
+                            <field name="flbk_letter_description" placeholder="FLBK Letter Description"/>
+                        </page>
+
+                        <page string="Form Ga for Bank">
+                            <field name="form_ga_description" placeholder="Form Ga Description"/>
+                        </page>
+
+                        <page string="Form Gha for Bank">
+                            <field name="form_gha_description" placeholder="Form Gha Description"/>
+                        </page>
+
+                        <page string="Encashment Forwarding Letter">
+                            <field name="encashment_forwarding_letter" />
+                        </page>
+
+                        <page string="Accounts">
+                            <group>
+                                 <group>
+                                     <field name="journal_id" domain="[('type', '=', 'bank')]" options="{'no_open':True,'no_create':True}"/>
+                                     <field name="encashment_acc_id" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}" />
+                                     <field name="bank_charge_acc_id" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}" />
+                                    <field name="other_charge_acc_id" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}" />
+                                    <field name="encashment_charge_acc_id" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}" />
+                                    <!--<field name="erq_acc_id" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}" />-->
+                                </group>
+                                <!--<group>
+                                </group>-->
+                            </group>
+                            <group>
+                                 <group>
+                                     <field name="erq_line_ids" >
+                                        <tree string="ERQ Lines" editable="bottom">
+                                            <field name="currency_id" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}"/>
+                                            <field name="erq_acc_id" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}"/>
+                                         </tree>
+                                        <form >
+                                            <group>
+                                                <field name="currency_id" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}"/>
+                                                <field name="erq_acc_id" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}"/>
+                                            </group>
+                                         </form>
+                                    </field>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+
+            </xpath>
+            <xpath expr="//sheet" position="after">
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </xpath>
+
+        </field>
+    </record>
+
+<!--    Tree View -->
+    <record id="view_cash_incentive_bank_tree" model="ir.ui.view">
+         <field name="name">cash.incentive.bank.tree</field>
+         <field name="model">res.bank</field>
+         <field name="arch" type="xml">
+             <tree string="Cash Incentive List">
+                 <field name="name"/>
+                 <field name="swift_code"/>
+                 <field name="routing"/>
+                 <field name="code_prefix"/>
+                 <field name="code_suffix"/>
+             </tree>
+         </field>
+    </record>
+
+    <!-- Filter -->
+    <record id="view_cash_incentive_filter" model="ir.ui.view">
+        <field name="name">view.cash.incentive.bank.filter</field>
+        <field name="model">res.bank</field>
+        <field name="priority" eval="15"/>
+        <field name="arch" type="xml">
+            <search string="Search Cash Incentive">
+                <field name="name" filter_domain="[('name', 'ilike', self)]"/>
+                <field name="swift_code" filter_domain="[('swift_code', 'ilike', self)]"/>
+           </search>
+        </field>
+    </record>
+
+    <!--Action -->
+    <record id="cash_incentive_bank_action" model="ir.actions.act_window">
+        <field name="name">Cash Incentive Bank</field>
+        <field name="res_model">res.bank</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="cash_incentive.view_cash_incentive_bank_tree"/>
+        <field name="domain">[('is_cash_incentive_bank', '=', True)]</field>
+        <field name="context">{'default_is_cash_incentive_bank': True}</field>
+        <field name="search_view_id" ref="view_cash_incentive_filter"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Please Create Cash Incentive Bank.
+            </p>
+        </field>
+    </record>
+
+    <record id="base.action_res_partner_bank_account_form" model="ir.actions.act_window">
+<!--            <field name="name">Banks</field>-->
+<!--            <field name="res_model">res.bank</field>-->
+<!--            <field name="view_mode">tree,form</field>-->
+<!--            <field name="search_view_id" ref="base.res_bank_view_search"/>-->
+<!--            <field name="help" type="html">-->
+<!--              <p class="o_view_nocontent_smiling_face">-->
+<!--                Create a Bank-->
+<!--              </p><p>-->
+<!--                Banks are the financial institutions at which you and your contacts have their accounts.-->
+<!--              </p>-->
+<!--            </field>-->
+         <field name="view_id" ref="base.view_res_bank_tree"/>
+        <field name="domain">[('is_cash_incentive_bank', '=', False)]</field>
+        <field name="context">{'default_is_cash_incentive_bank': False}</field>
+        </record>
+
+    <!-- cash_incentive menu -->
+    <menuitem id="sub_menu_cash_incentive_bank" name="Cash Incentive Bank" action="cash_incentive_bank_action" parent="menu_configuration_head" sequence="1"/>
+
+</odoo>

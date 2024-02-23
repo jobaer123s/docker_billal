@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="paperformat_incentive_pdf" model="report.paperformat">
+			<field name="name">Report Format</field>
+            <field name="format">custom</field>
+            <field name="orientation">Portrait</field>
+            <field name="page_width">350</field>
+            <field name="page_height">383</field>
+            <field name="margin_top">15</field>
+            <field name="margin_bottom">7</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_spacing">35</field>
+            <field name="dpi">80</field>
+		</record>
+<!--        <report id="incentive_report_pdf"-->
+<!--                model="cash.incentive.wizard"-->
+<!--			    string="Incentive Report"-->
+<!--                name="cash_incentive.incentive_report_pdf_qweb"-->
+<!--			    file="cash_incentive.incentive_report_pdf_qweb"-->
+<!--                paperformat="cash_incentive.paperformat_incentive_pdf"-->
+<!--                report_type="qweb-html"/>-->
+
+
+        <record id="incentive_report_pdf" model="ir.actions.report">
+            <field name="name">Incentive Report</field>
+            <field name="model">cash.incentive.wizard</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">cash_incentive.incentive_report_pdf_qweb</field>
+            <field name="report_file">cash_incentive.incentive_report_pdf_qweb</field>
+            <field name="print_report_name">Incentive_Report</field>
+            <field name="attachment"/>
+            <field name="paperformat_id" ref="paperformat_incentive_pdf"/>
+            <field name="binding_model_id" ref="model_cash_incentive_wizard"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <template id="incentive_report_pdf_qweb">
+            <t t-call="web.html_container">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <style type="text/css">
+                            th{
+                                background: #fff;
+                                font-wight: bold;
+                                border: 0.5px solid #ccc !important;
+                            }
+                            td {
+                                padding: 7px !important;
+                                border-right: 0.5px solid #ccc !important;
+                                border: 0.5px solid #ccc !important;
+                            }
+                            .thead {
+                                border-bottom: 0.5px solid #ccc !important;
+                                border: 0.5px solid #ccc !important;
+                            }
+                            tr {
+                                border: 0.5px solid #ccc
+                            }
+                            h4 {
+                                color:teal;
+                                text-align:center !important;
+                            }
+
+                            .total-row{
+                                background-color: #ffffff !important;
+                                text-align: center !important;
+                                border: 0.5px solid #ccc; !important
+                            }
+
+                        </style>
+                        <div class="oe_structure"/>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <h4 style="color: #000">Cash Incentive Report</h4>
+                                <p style="color: #000; text-align: center; font-size:18px ">Date Range:  <t t-esc="start_date"/> To <t t-esc="end_date"/> </p>
+                            </div>
+                        </div>
+                        <br/>
+                        <div class="row">
+                            <table class="table thead">
+                                <thead class="thead">
+                                    <tr style="border: 0.5px solid #ccc">
+                                        <th  style="color: #000;text-align:center" rowspan="2" class="align-middle"><strong>Sl No.</strong></th>
+                                        <th style="color: #000" rowspan="2" class="align-left"><strong>Client Name</strong></th>
+                                        <th style="color: #000" rowspan="2" class="align-left"><strong>Invoice No.</strong></th>
+                                        <th style="color: #000" rowspan="2" class="align-left"><strong>Invoice Date</strong></th>
+                                        <th style="color: #000" rowspan="2" class="align-left"><strong>Quantity</strong></th>
+                                        <th style="color: #000" rowspan="2" class="align-right"><strong>Invoice amount (FC)</strong></th>
+                                        <th style="color: #000" rowspan="2" class="align-right"><strong>Basis Fee</strong></th>
+                                        <th style="color: #000" rowspan="2" class="align-right"><strong>Swift Amount (FC)</strong></th>
+                                        <th style="color: #000" rowspan="2" class="align-left"><strong>Currency</strong></th>
+                                        <th style="color: #000" rowspan="2" class="align-left"><strong>Swift/nostro date</strong></th>
+                                        <th style="color: #000" rowspan="2" class="align-left"><strong>Current Date</strong></th>
+                                        <th style="color: #000" rowspan="2" class="align-left"><strong>Application Deadline</strong></th>
+                                        <th style="color: #000" rowspan="2" class="align-left"><strong>Remaining days</strong></th>
+                                        <th style="color: #000" rowspan="2" class="align-right"><strong>OD Sight Rate</strong></th>
+                                        <th style="color: #000" rowspan="2" class="align-right"><strong>Incentive Amount (FC)</strong></th>
+                                        <th style="color: #000" rowspan="2" class="align-right"><strong>Incentive Amount (BDT)</strong></th>
+                                        <th style="color: #000" rowspan="2" class="align-right"><strong>Encashment Rate</strong></th>
+                                        <th style="color: #000" rowspan="2" class="align-right"><strong>Equivalent taka</strong></th>
+                                        <th style="color: #000" rowspan="2" class="align-left"><strong>Date Credited to Beneficirys A/C</strong></th>
+                                        <th style="color: #000" rowspan="2" class="align-left"><strong>(g) Reporting Statement/Schedule to BB with Month</strong></th>
+                                        <th style="color: #000" rowspan="2" class="align-left"><strong>(h) Reference of Online Reporting to BB</strong></th>
+                                        <th style="color: #000" rowspan="2" class="align-left"><strong>Contract Price</strong></th>
+                                        <th style="color: #000" rowspan="2" class="align-left"><strong>Ordering Customer Name &amp; Address</strong></th>
+                                        <th style="color: #000" rowspan="2" class="align-left"><strong>Ordering Institution Name &amp; Address</strong></th>
+                                        <th style="color: #000" rowspan="2" class="align-left"><strong>Contract No.</strong></th>
+                                        <th style="color: #000" rowspan="2" class="align-left"><strong>Contract Date</strong></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <t t-set="t_invoice_amt" t-value="0"/>
+                                <t t-set="t_swift_amt" t-value="0"/>
+                                <t t-set="t_od_sight_rate" t-value="0"/>
+                                <t t-set="t_incentive_amt_fc" t-value="0"/>
+                                <t t-set="t_incentive_amt_bdt" t-value="0"/>
+                                <t t-set="t_iencashment_amt_bdt" t-value="0"/>
+                                <t t-set="t_basis_fee_amt" t-value="0"/>
+                                <t t-set="sl_no" t-value="1"/>
+                                <t t-foreach="csr" t-as="id">
+                                    <t t-set="is_sl_no" t-value="0"/>
+                                    <t t-foreach="request.env['cash.incentive.head'].search([('id', '=', id)])" t-as="a">
+                                        <tr t-if="a" style="border: 0.5px solid #ccc">
+                                            <td style="border:0" colspan="25" class="text-left" >
+                                                <strong>Reference: <t t-esc="a.name"/></strong>
+                                            </td>
+                                        </tr>
+
+                                     <t t-if="a">
+                                        <t t-set="d_invoice_amt" t-value="0"/>
+                                        <t t-set="d_swift_amt" t-value="0"/>
+                                        <t t-set="d_od_sight_rate" t-value="0"/>
+                                        <t t-set="d_incentive_amt_fc" t-value="0"/>
+                                        <t t-set="d_incentive_amt_bdt" t-value="0"/>
+                                        <t t-set="d_iencashment_amt_bdt" t-value="0"/>
+
+                                        <t t-foreach="a.invoice_line_ids" t-as="o">
+                                            <tr style="border: 0.5px solid #ccc">
+                                                <t t-if="is_sl_no &lt; 1">
+                                                    <td t-att-rowspan="len(a.invoice_line_ids)" class="text-center" >
+                                                        <t t-esc="sl_no"/>
+                                                     </td>
+                                                     <td t-att-rowspan="len(a.invoice_line_ids)" class="text-center" >
+                                                        <t t-esc="a.partner_id.name"/>
+                                                     </td>
+                                                </t>
+                                                 <td class="text-left" >
+                                                   <t t-esc="o.invoice_id.ref"/>
+                                                 </td>
+                                                 <td class="text-left" >
+                                                     <t t-esc="o.invoice_date.strftime('%d-%b-%y')"/>
+<!--                                                    <t t-esc="o.invoice_date"/>-->
+                                                 </td>
+                                                 <td class="text-left" >
+                                                   <t t-esc="o.invoice_qty_str"/>
+                                                 </td>
+                                                 <td class="text-right" >
+                                                    <t t-esc="o.invoice_amt"/>
+                                                     <t t-set="d_invoice_amt" t-value="d_invoice_amt + o.invoice_amt"/>
+                                                 </td>
+                                                 <td class="text-left" >
+
+                                                 </td>
+                                                 <td class="text-right" >
+                                                    <t t-esc="o.swift_amt"/>
+                                                     <t t-set="d_swift_amt" t-value="d_swift_amt + o.swift_amt"/>
+                                                 </td>
+                                                 <td class="text-left" >
+                                                   <t t-esc="o.currency_id.name"/>
+                                                 </td>
+                                                 <td class="text-left" >
+                                                     <t t-if="o.swift_message_id.date">
+                                                        <t t-esc="o.swift_message_id.date.strftime('%d-%b-%y')"/>
+                                                     </t>
+<!--                                                   <t t-esc="o.swift_message_id.date"/>-->
+                                                 </td>
+                                                 <td class="text-left" >
+                                                     <t t-esc="o.create_date.strftime('%d-%b-%y')"/>
+<!--                                                   <t t-esc="a.create_date"/>-->
+                                                 </td>
+                                                 <td class="text-left" >
+                                                     <t t-if="o.application_deadline">
+                                                         <t t-esc="o.application_deadline.strftime('%d-%b-%y')"/>
+                                                     </t>
+<!--                                                     <t t-esc="o.application_deadline.strftime('%d-%b-%y')"/>-->
+<!--                                                   <t t-esc="a.application_deadline"/>-->
+                                                 </td>
+                                                 <td class="text-left" >
+                                                   <t t-esc="a.remaining_days"/>
+                                                 </td>
+                                                 <td class="text-right" >
+                                                   <t t-esc="o.od_sight_rate"/>
+                                                     <t t-set="d_od_sight_rate" t-value="d_od_sight_rate + o.od_sight_rate"/>
+                                                 </td>
+                                                 <td class="text-right" >
+                                                   <t t-esc="o.incentive_amt_fc"/>
+                                                     <t t-set="d_incentive_amt_fc" t-value="d_incentive_amt_fc + o.incentive_amt_fc"/>
+                                                 </td>
+                                                 <td class="text-right" >
+                                                   <t t-esc="o.incentive_amt_bdt"/>
+                                                     <t t-set="d_incentive_amt_bdt" t-value="d_incentive_amt_bdt + o.incentive_amt_bdt"/>
+                                                 </td>
+                                                 <td class="text-right" >
+                                                   <t t-esc="'{0:,.4f}'.format(o.encashment_rate_bdt)" />
+                                                 </td>
+                                                 <td class="text-right" >
+                                                     <t t-esc="'{0:,.2f}'.format(o.encashment_amt_bdt)" />
+                                                     <t t-set="d_iencashment_amt_bdt" t-value="d_iencashment_amt_bdt + o.encashment_amt_bdt"/>
+                                                 </td>
+                                                 <td class="text-left" >
+                                                   <t t-esc="a.date_credited_beneficiaries"/>
+                                                 </td>
+                                                 <td class="text-left" >
+                                                   <t t-esc="a.reporting_st_to_bb"/>
+                                                 </td>
+                                                 <td class="text-left" >
+                                                   <t t-esc="a.ref_online_to_bb"/>
+                                                 </td>
+                                                 <td class="text-left" >
+                                                   <t t-esc="a.contract_price"/>
+                                                 </td>
+                                                 <td class="text-left" >
+                                                   <t t-esc="a.customer_address"/>
+                                                 </td>
+                                                 <td class="text-left" >
+                                                   <t t-esc="a.institution_address"/>
+                                                 </td>
+                                                 <td class="text-left" >
+                                                   <t t-esc="a.contract_number"/>
+                                                 </td>
+                                                 <td class="text-left" >
+                                                   <t t-esc="a.contract_date_str"/>
+                                                 </td>
+                                                <t t-set="is_sl_no" t-value="is_sl_no+1"/>
+
+                                            </tr>
+                                        </t>
+                                           <t t-set="t_invoice_amt" t-value="t_invoice_amt + d_invoice_amt"/>
+                                           <t t-set="t_basis_fee_amt" t-value="t_basis_fee_amt + a.basis_fee_amt"/>
+                                           <t t-set="t_swift_amt" t-value="t_swift_amt + d_swift_amt"/>
+                                           <t t-set="t_od_sight_rate" t-value="t_od_sight_rate + d_od_sight_rate"/>
+                                           <t t-set="t_incentive_amt_fc" t-value="t_incentive_amt_fc + d_incentive_amt_fc"/>
+                                           <t t-set="t_incentive_amt_bdt" t-value="t_incentive_amt_bdt + d_incentive_amt_bdt"/>
+                                           <t t-set="t_iencashment_amt_bdt" t-value="t_iencashment_amt_bdt + d_iencashment_amt_bdt"/>
+                                           <tr style="background:#f5f4f4">
+                                              <td class="text-right" colspan="5"><strong> Total</strong></td>
+                                              <td class="text-right">
+                                                 <strong><t t-esc="'{0:,.2f}'.format(d_invoice_amt)"/></strong>
+                                              </td>
+                                              <td class="text-right">
+                                                 <strong><t t-esc="'{0:,.2f}'.format(a.basis_fee_amt)"/></strong>
+                                              </td>
+                                              <td class="text-right">
+                                                 <strong><t t-esc="'{0:,.2f}'.format(d_swift_amt)"/></strong>
+                                              </td>
+                                               <td class="text-right" colspan="5"></td>
+                                              <td class="text-right">
+                                                  <strong><t t-esc="'{0:,.2f}'.format(d_od_sight_rate)"/></strong>
+                                              </td>
+                                              <td class="text-right">
+                                                  <strong><t t-esc="'{0:,.2f}'.format(d_incentive_amt_fc)"/></strong>
+                                              </td>
+                                              <td class="text-right">
+                                                  <strong><t t-esc="'{0:,.2f}'.format(d_incentive_amt_bdt)"/></strong>
+                                              </td>
+                                               <td class="text-right" colspan="1"></td>
+                                              <td class="text-right">
+                                                  <strong><t t-esc="'{0:,.2f}'.format(d_iencashment_amt_bdt)"/></strong>
+                                              </td>
+                                               <td class="text-right" colspan="8"></td>
+                                               <t t-set="sl_no" t-value="sl_no+1"/>
+                                           </tr>
+                                    </t>
+                                     </t>
+                                </t>
+                                <tr style="border: 0.5px solid #ccc;background:#f5f4f4">
+                                     <td class="text-right" colspan="5"><strong> Grand Total</strong></td>
+                                     <td class="text-right">
+                                        <strong><t t-esc="'{0:,.2f}'.format(t_invoice_amt)"/></strong>
+                                     </td>
+                                     <td class="text-right">
+                                        <strong><t t-esc="'{0:,.2f}'.format(t_basis_fee_amt)"/></strong>
+                                     </td>
+                                     <td class="text-right">
+                                        <strong><t t-esc="'{0:,.2f}'.format(t_swift_amt)"/></strong>
+                                     </td>
+                                     <td class="text-right" colspan="5"></td>
+                                     <td class="text-right">
+                                        <strong><t t-esc="'{0:,.2f}'.format(t_od_sight_rate)"/></strong>
+                                     </td>
+                                     <td class="text-right">
+                                        <strong><t t-esc="'{0:,.2f}'.format(t_incentive_amt_fc)"/></strong>
+                                     </td>
+                                     <td class="text-right">
+                                        <strong><t t-esc="'{0:,.2f}'.format(t_incentive_amt_bdt)"/></strong>
+                                     </td>
+                                    <td class="text-right" colspan="1"></td>
+                                     <td class="text-right">
+                                        <strong><t t-esc="'{0:,.2f}'.format(t_iencashment_amt_bdt)"/></strong>
+                                     </td>
+                                    <td class="text-right" colspan="8"></td>
+                                 </tr>
+                            </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </template>
+
+    </data>
+</odoo>

@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="act_account_move_count_payment" model="ir.actions.act_window">
+            <field name="name">Payment</field>
+            <field name="res_model">account.payment</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[]</field>
+            <field name="context">{'search_default_invoice_ids': [active_id], 'default_invoice_ids': [active_id], 'default_payment_type': 'inbound'}</field>
+        </record>
+
+        <record id="inherited_account_move_form_view" model="ir.ui.view">
+            <field name="name">custom.account.move.form.view</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='currency_id']" position="before">
+                    <field name="is_checked_acc" readonly="1" invisible="context.get('default_type') in ('in_receipt','out_receipt','in_refund','out_refund')"/>
+                </xpath>
+
+                <xpath expr="//button[@name='action_register_payment']" position="replace">
+                    <!--button for invoice-->
+                    <field name="move_type" invisible="1"/>
+<!--                    <field name="payment_state" invisible="1"/>-->
+                   <button name="action_register_payment" id="account_invoice_payment_btn"
+                           type="object" class="oe_highlight"
+                           invisible="state != 'posted' or  payment_state != 'not_paid' or move_type not in ('out_invoice','out_refund','out_receipt')"
+                           string="Register Payment"
+                           groups="cash_incentive.group_sale_controller"/>
+                    <!--button for bill-->
+                   <button name="action_register_payment" id="account_invoice_payment_bill_btn"
+                           type="object" class="oe_highlight"
+                           invisible="state != 'posted' or payment_state !=  'not_paid' or move_type not in  ('in_invoice', 'in_refund','in_receipt')"
+                           string="Register Payment"
+                           groups="cash_incentive.group_purchase_controller"
+                   />
+
+                    <button name="action_checked_account" id="account_checked_account_btn"
+                           type="object" class="btn-primary"
+                           invisible="state != 'posted' or is_checked_acc  != False or move_type not in ('in_invoice', 'out_invoice')"
+                           string="Check By Account"
+                           groups="account.group_account_manager"/>
+                </xpath>
+
+                <xpath expr="//form//header//button[@name='button_draft']" position="attributes">
+                    <attribute name="groups">custom_common_settings.group_journal_entry_editor</attribute>
+                </xpath>
+
+                <field name="journal_id" position="after">
+                    <field name="courier_service_id" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}" readonly="1" force_save="1" invisible="context.get('default_type') not in ('out_invoice', 'out_refund','out_receipt')"/>
+                    <field name="courier_payment_type" readonly="1" force_save="1" invisible="context.get('default_type') not in ('out_invoice', 'out_refund','out_receipt')"/>
+                    <field name="other_cost_reference" readonly="1" force_save="1" invisible="context.get('default_type') in ('out_invoice', 'out_refund', 'in_refund','out_receipt','in_receipt','entry')"/>
+<!--                    comment-for-upgrade-->
+<!--                    <field name="customer_reference_id" readonly="1" force_save="1" invisible="context.get('default_type') in ('in_invoice', 'out_refund', 'in_refund','out_receipt','in_receipt','entry')"-->
+<!--                           attrs="{'invisible':[('customer_reference_id','=',False)]}" options="{'no_open':True,'no_create':1}"/>-->
+                    <field name="customer_reference_id" readonly="1" force_save="1" invisible="context.get('default_type') in ('in_invoice', 'out_refund', 'in_refund','out_receipt','in_receipt','entry') and customer_reference_id == False " options="{'no_open':True,'no_create':1}"/>
+
+
+                </field>
+<!--                    comment-for-upgrade-->
+<!--                <xpath expr="/form/sheet/notebook/page/group/field[@name='amount_untaxed']" position="replace">-->
+<!--                    <field name="total_price_amount" readonly="1" force_save="1"/>-->
+<!--                    <field name="total_discount_amount" readonly="1" force_save="1"/>-->
+<!--                    <field class="oe_subtotal_footer_separator" name="amount_untaxed" readonly="1" force_save="1"/>-->
+<!--                </xpath>-->
+
+                <xpath expr="/form/sheet/notebook/page/field[@name='invoice_line_ids']/tree/field[@name='discount']" position="after">
+                    <field name="discount_amount" force_save="1"/>
+                </xpath>
+                <xpath expr="/form/sheet/notebook/page/field[@name='invoice_line_ids']/tree/field[@name='price_unit']" position="after">
+                    <field name="net_amount"  force_save="1"/>
+                </xpath>
+
+                <div name="button_box" position="inside">
+                    <button class="oe_stat_button" name="%(act_account_move_count_payment)d" type="action"
+                        icon="fa-money" help="Account Payment" invisible="payment_count == 0">
+                        <field string="Payment" name="payment_count" widget="statinfo"/>
+                    </button>
+                </div>
+            </field>
+        </record>
+
+        <!-- Account Invoice Tree View Modification-->
+        <record id="view_invoice_tree_inherit" model="ir.ui.view">
+            <field name="name">account.invoice.tree.inherit.payment</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_invoice_tree"/>
+            <field name="arch" type="xml">
+                <!-- Hide the Tax Excluded Column -->
+                <xpath expr="//tree/field[@name='amount_untaxed_signed']" position="replace"/>
+                <xpath expr="//tree" position="attributes">
+                    <attribute name="decoration-success">payment_state=='paid'</attribute>
+                    <attribute name="decoration-danger">is_checked_acc == False</attribute>
+                    <attribute name="decoration-info">is_checked_acc == True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='state']" position="before">
+                     <field name="is_checked_acc" invisible="context.get('default_type') in ('in_receipt','out_receipt','in_refund','out_refund')"/>
+                </xpath>
+
+                <!-- Added Paid Amount in the tree view -->
+                <xpath expr="//tree/field[@name='amount_total_signed']" position="after">
+                    <field name="payment_amount" string="Paid Amount" sum="Total"/>
+                </xpath>
+                <xpath expr="//tree/field[@name='invoice_user_id']" position="after">
+                    <field name="customer_reference_id"  invisible="context.get('default_type') in ('in_invoice', 'in_refund','in_receipt')" optional="hidden"/>
+                    <field name="partner_id" string="Partner"  invisible="context.get('default_type') in ('out_invoice', 'in_invoice','in_receipt','out_receipt','in_refund','out_refund')"/>
+                </xpath>
+<!--                comment-for-upgrade-->
+<!--                <xpath expr="//field[@name='partner_id']" position="replace">-->
+<!--                    <field name="partner_id" string="Partner"  invisible="context.get('default_type') in ('out_invoice', 'in_invoice','in_receipt','out_receipt','in_refund','out_refund')"/>-->
+<!--                </xpath>-->
+            </field>
+        </record>
+
+        <!-- Filter by Invoice Description -->
+        <record id="view_invoice_search_inherit" model="ir.ui.view">
+            <field name="name">account.move.list.search.inherit</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+            <field name="arch" type="xml">
+                <!-- Filter by Invoice Line Description -->
+                <xpath expr="//search/field[@name='date']" position="after">
+                    <field name="other_cost_reference"/>
+                    <field name="invoice_line_ids" string="Invoice Line Description"/>
+                    <field name="partner_code"/>
+                    <field name="customer_reference_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Added Balance Column in Journal Items View -->
+        <record id="view_move_line_tree_inherit_cus_acc_inv" model="ir.ui.view">
+            <field name="name">move.line.tree.inherit.cus.acc.inv</field>
+            <field name="model">account.move.line</field>
+            <field name="inherit_id" ref="account.view_move_line_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='credit']" position="after">
+                    <field name="balance" string="Balance" sum="Total"/>
+                    <field name="customer_reference_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Filter by Invoice Line -->
+        <record id="view_invoice_line_search_inherit" model="ir.ui.view">
+            <field name="name">account.move.line.list.search.inherit</field>
+            <field name="model">account.move.line</field>
+            <field name="inherit_id" ref="account.view_account_move_line_filter"/>
+            <field name="arch" type="xml">
+                <!-- Filter by Invoice Line Description -->
+                <xpath expr="//search/field[@name='partner_id']" position="after">
+                    <field name="customer_reference_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <!--outstanding invoice menu-->
+        <record id="action_outstanding_invoice" model="ir.actions.server">
+            <field name="name">Outstanding Invoice</field>
+            <field name="type">ir.actions.server</field>
+            <field name="model_id" ref="model_account_move"/>
+            <field name="state">code</field>
+            <field name="code">
+            action = model.get_outstanding_invoice()
+            </field>
+       </record>
+
+        <menuitem id="menu_account_outstanding_invoice"
+          name="Outstanding Invoices"
+          sequence="2"
+          action="action_outstanding_invoice"
+          parent="account.menu_finance_receivables" />
+
+        <!--outstanding bill menu-->
+        <record id="action_outstanding_bill" model="ir.actions.server">
+            <field name="name">Outstanding Bill</field>
+            <field name="type">ir.actions.server</field>
+            <field name="model_id" ref="model_account_move"/>
+            <field name="state">code</field>
+            <field name="code">
+            action = model.get_outstanding_bill()
+            </field>
+       </record>
+
+        <menuitem id="menu_account_outstanding_bill"
+          name="Outstanding Bills"
+          sequence="2"
+          action="action_outstanding_bill"
+          parent="account.menu_finance_payables" />
+
+    </data>
+</odoo>

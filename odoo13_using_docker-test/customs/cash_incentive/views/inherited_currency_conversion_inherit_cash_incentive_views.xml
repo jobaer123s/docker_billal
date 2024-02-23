@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_currency_conversion_form_inherit_cash_incentive" model="ir.ui.view">
+		<field name="name">currency.conversion.rate.form.inherit</field>
+		<field name="model">currency.conversion.rate</field>
+		<field name="inherit_id" ref="view_currency_conversion_rate_form" />
+		<field name="arch" type="xml">
+			<xpath expr="//field[@name='date']" position="before">
+				<field required="1" name="type"/>
+				<field name="bank_id" required="type != '01'" invisible="type =='01'"
+					   options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}"/>
+			</xpath>
+		</field>
+	</record>
+
+    <record id="view_currency_conversion_tree_inherit_cash_incentive" model="ir.ui.view">
+		<field name="name">currency.conversion.rate.tree.inherit</field>
+		<field name="model">currency.conversion.rate</field>
+		<field name="inherit_id" ref="view_currency_conversion_rate_tree_view" />
+		<field name="arch" type="xml">
+			<xpath expr="//field[@name='date']" position="before">
+				<field name="type"/>
+				<field name="bank_id"/>
+			</xpath>
+		</field>
+	</record>
+
+    <record id="view_currency_conversion_rate_search_inherit_cash_incentive" model="ir.ui.view">
+		<field name="name">currency.conversion.rate.search.inherit</field>
+		<field name="model">currency.conversion.rate</field>
+		<field name="inherit_id" ref="view_currency_conversion_rate_search" />
+		<field name="arch" type="xml">
+			<xpath expr="//field[@name='currency_id']" position="after">
+				<field name="type"/>
+				<field name="bank_id"/>
+			</xpath>
+		</field>
+	</record>
+</odoo>

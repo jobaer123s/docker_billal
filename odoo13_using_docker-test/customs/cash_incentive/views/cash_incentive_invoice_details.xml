@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- cash_incentive Form View -->
+	<record id="view_cash_incentive_invoice_form" model="ir.ui.view">
+        <field name="name">cash.incentive.invoice.form</field>
+        <field name="model">cash.incentive.invoice</field>
+        <field name="arch" type="xml">
+            <form string="Cash Incentive Invoice Form">
+                <sheet>
+                    <group>
+                        <group>
+                            <field readonly="1" force_save="1" name="swift_message_id"  options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}"/>
+                            <field name="swift_msg_state"/>
+                            <field name="bank_id" invisible="1"/>
+
+                            <field name="partner_id" readonly="1" force_save="1" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}"/>
+                            <field name="invoice_id" domain="[('state', '=', 'posted'),('partner_id', '=', partner_id),('move_type', '=', 'out_invoice'),('is_done_inv_amount', '=', False)]" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}"/>
+                            <field name="invoice_date" readonly="1" force_save="1" />
+
+                            <field name="currency_id" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}" readonly="1" force_save="1"/>
+                            <field name="invoice_amt" style="font-weight:bold" readonly="1" force_save="1" />
+                            <field name="usd_rate" readonly="1" force_save="1" />
+                            <field name="invoice_amt_bdt" readonly="1" force_save="1" />
+                            <br/>
+                            <br/>
+                            <field name="swift_amt" style="font-weight:bold" required="1"/>
+                            <field name="swift_amt_bdt" readonly="1" force_save="1"/>
+                            <field name="swift_charge_fc" style="font-weight:bold" required="1"/>
+                            <!--<field name="swift_charge_rate" required="1"/>-->
+                            <field name="swift_charge_bdt" readonly="1" force_save="1"/>
+                            <br/>
+                            <field name="total_swift_amt" readonly="1" force_save="1" style="font-weight:bold"/>
+                            <field name="total_swift_amt_bdt" readonly="1" force_save="1"/>
+                            <field name="due_swift_amt" readonly="1" force_save="1" style="font-weight:bold" decoration-danger="due_swift_amt &gt; 0"/>
+                            <field name="due_swift_amt_bdt" readonly="1" force_save="1" decoration-danger="due_swift_amt_bdt &gt; 0"/>
+                            <br/>
+                            <field name="encashment_amt_fc" readonly="1" />
+                            <field name="encashment_rate_bdt" readonly="1" />
+                            <field name="encashment_amt_bdt" readonly="1" />
+                            <field name="erq_amt_fc" readonly="1" />
+                            <field name="erq_rate_bdt" readonly="1" />
+                            <field name="erq_amt_bdt" readonly="1" />
+                            <field name="difference_amnt_bdt" invisible="1" />
+                            <field name="encashment_date" readonly="1" />
+<!--                            <field name="swift_msg_state" readonly="1" />-->
+                        </group>
+                        <group>
+                            <field name="swift_date"/>
+                            <field name="application_deadline" readonly="1" force_save="1"/>
+                            <field name="remaining_days" readonly="1" decoration-danger="remaining_days &lt; 31"/>
+                             <field name="incentive_rate_fc" readonly="1" force_save="1"/>
+                             <field name="incentive_amt_fc" readonly="1" force_save="1"/>
+                            <field name="od_sight_rate" readonly="1" force_save="1" />
+                            <field name="incentive_amt_bdt" />
+<!--                            <field name="contract_id" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}" />-->
+                            <field widget="many2many_tags" name="contract_ids" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}" />
+                            <field name="contract_price_str" readonly="1" force_save="1" />
+<!--                            <field name="contract_number" />-->
+                            <field name="contract_date_str" readonly="1" force_save="1" />
+                            <field name="date_credited_beneficiaries" />
+                            <field name="reporting_st_to_bb" />
+                            <field name="ref_online_to_bb" />
+                            <field name="swift_customer_name" />
+                            <field name="is_show" invisible="1"/>
+                        </group>
+                    </group>
+                    <separator/>
+                    <group string="Cash Incentive File">
+                        <group>
+                            <field name="head_id" domain="[('partner_id', '=', partner_id)]" options="{'no_create':1,'no_create_edit':1, 'no_quick_create': True}"/>
+                            <field name="incentive_state" />
+                        </group>
+                    </group>
+                    <footer invisible="is_show != True">
+                        <button type="object" string="Save" class="btn-primary" name="save_data"/>
+                        <button type="object" string="Remove" class="btn-danger" name="remove_data"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- cash_incentive Tree View -->
+    <record id="view_cash_incentive_invoice_tree" model="ir.ui.view">
+         <field name="name">cash.incentive.invoice.tree</field>
+         <field name="model">cash.incentive.invoice</field>
+         <field name="arch" type="xml">
+             <tree default_order='id desc' decoration-info="(remaining_days  &gt; 30) and (remaining_days  &lt; 91)" decoration-danger="remaining_days &lt; 31"  string="Cash Incentive Invoice List">
+                <field name="invoice_id" />
+                 <field name="invoice_date" />
+                 <field name="invoice_no" />
+                <field name="invoice_partner_id" />
+                <field name="swift_customer_name" />
+                <field name="foreign_currency_type" string="Invoice Currency"/>
+                 <field name="head_id"/>
+                <field name="cash_incentive_date"/>
+                 <field name="remaining_days"/>
+                 <field name="od_sight_rate"/>
+
+                 <field name="invoice_total_fc" optional="hidden"/>
+                <field name="usd_rate" optional="hidden"/>
+                <field name="amount_total_signed" string="Invoice Total (BDT)" optional="hidden"/>
+                <field name="invoice_state" optional="hidden"/>
+                <field name="swift_date" optional="hidden"/>
+                 <field name="swift_bank_id" optional="hidden"/>
+                <field name="encashment_date" optional="hidden"/>
+                <field name="encashment_bank_id" optional="hidden"/>
+                <field name="encashment_rate_bdt" optional="hidden"/>
+
+                 <field name="remaining_days" optional="hidden"/>
+
+             </tree>
+         </field>
+    </record>
+
+    <record id="cash_incentive_all_invoice_tree" model="ir.ui.view">
+         <field name="name">cash.incentive.invoice.tree</field>
+         <field name="model">cash.incentive.invoice</field>
+         <field name="arch" type="xml">
+             <tree default_order='id desc' decoration-info="(remaining_days  &gt; 30) and (remaining_days  &lt; 91)" decoration-danger="remaining_days &lt; 31"  string="Cash Incentive Invoice List">
+                <field name="invoice_customer_type" />
+                <field name="invoice_id" />
+                 <field name="invoice_date" />
+                 <field name="invoice_no" />
+                <field name="invoice_partner_id" />
+                <field name="swift_customer_name" />
+                <field name="foreign_currency_type" />
+                <field name="invoice_total_fc" />
+                <field name="usd_rate" />
+                <field name="amount_total_signed" string="Invoice Total (BDT)"/>
+                <field name="invoice_state" />
+
+                <field name="swift_date" optional="hidden"/>
+                 <field name="swift_bank_id" optional="hidden"/>
+                <field name="encashment_date" optional="hidden"/>
+                <field name="encashment_bank_id" optional="hidden"/>
+                <field name="encashment_rate_bdt" optional="hidden"/>
+                <field name="remaining_days" optional="hidden"/>
+                <field name="head_id" optional="hidden"/>
+                <field name="cash_incentive_date" optional="hidden"/>
+                 <field name="od_sight_rate" optional="hidden"/>
+             </tree>
+         </field>
+    </record>
+
+    <!-- Filter -->
+    <record id="view_cash_incentive_invoice_filter" model="ir.ui.view">
+        <field name="name">view.cash.incentive.invoice.filter</field>
+        <field name="model">cash.incentive.invoice</field>
+        <field name="arch" type="xml">
+            <search string="Search Cash Incentive">
+                <field name="invoice_partner_id"  string="Customer Name" filter_domain="[('invoice_partner_id', 'ilike', self)]"/>
+                <field name="swift_customer_name"  string="SWIFT Customer Name" filter_domain="[('swift_customer_name', 'ilike', self)]"/>
+                <field name="invoice_partner_id" string="Customer Mobile" filter_domain="[('invoice_partner_id.mobile', 'ilike', self)]"/>
+                <field name="invoice_id" filter_domain="[('invoice_id.ref', 'ilike', self)]"/>
+                <field name="invoice_date" filter_domain="[('invoice_date', 'ilike', self)]"/>
+                <field name="swift_date" filter_domain="[('swift_date', 'ilike', self)]"/>
+                <field name="swift_bank_id" filter_domain="[('swift_bank_id', 'ilike', self)]"/>
+                <field name="encashment_date" filter_domain="[('encashment_date', 'ilike', self)]"/>
+                <field name="encashment_bank_id" filter_domain="[('encashment_bank_id', 'ilike', self)]"/>
+                <field name="head_id" filter_domain="[('head_id', 'ilike', self)]"/>
+
+                <filter name="remaining" string="Upto 30 Days" domain="[('remaining_days', 'ilike', 30)]"/>
+                <filter name="remaining1" string="Upto 45 Days" domain="[('remaining_days', 'ilike', 45)]"/>
+                <filter name="remaining2" string="Upto 60 Days" domain="[('remaining_days', 'ilike', 60)]"/>
+                <filter name="remaining3" string="Upto 90 Days" domain="[('remaining_days', 'ilike', 90)]"/>
+                <filter name="remaining4" string="Upto 120 Days" domain="[('remaining_days', 'ilike', 120)]"/>
+                <filter name="remaining5" string="Upto 180 Days" domain="[('remaining_days', 'ilike', 180)]"/>
+                <separator/>
+                <filter name="incentive" string="Incentive Filed?" domain="[('head_id', '!=', False)]"/>
+                <filter name="incentive1" string="Incentive Not Filed?" domain="[('head_id', '=', False)]"/>
+                <separator/>
+                <filter string="SWIFT Received?" name="swift_received" domain="[('swift_message_id','!=', False)]"/>
+                <filter string="SWIFT Not Received?" name="swift_not_received" domain="[('swift_message_id','=', False)]"/>
+                <separator/>
+                <filter string="Encashed?" name="encashed" domain="[('swift_message_id.state','=', 'pay')]"/>
+                <filter string="Not Encashed?" name="not_encashed" domain="[('swift_message_id.state','!=', 'pay')]"/>
+
+                <group expand="1" string="Group By">
+                    <filter string="Customer" name="partner_id" context="{'group_by':'partner_id'}"/>
+                </group>
+           </search>
+        </field>
+    </record>
+
+    <record id="view_cash_incentive_all_invoice_filter" model="ir.ui.view">
+        <field name="name">view.cash.incentive.all.invoice.filter</field>
+        <field name="model">cash.incentive.invoice</field>
+        <field name="arch" type="xml">
+            <search string="Search Invoice">
+                <field name="invoice_partner_id" string="Customer Name" filter_domain="[('invoice_partner_id', 'ilike', self)]"/>
+                <field name="swift_customer_name"  string="SWIFT Customer Name" filter_domain="[('swift_customer_name', 'ilike', self)]"/>
+                <field name="invoice_partner_id" string="Customer Mobile" filter_domain="[('invoice_partner_id.mobile', 'ilike', self)]"/>
+                <field name="invoice_id" filter_domain="[('invoice_id.ref', 'ilike', self)]"/>
+                <field name="invoice_date" filter_domain="[('invoice_date', 'ilike', self)]"/>
+                <field name="swift_date" filter_domain="[('swift_date', 'ilike', self)]"/>
+                <field name="swift_bank_id" filter_domain="[('swift_bank_id', 'ilike', self)]"/>
+                <field name="encashment_date" filter_domain="[('encashment_date', 'ilike', self)]"/>
+                <field name="encashment_bank_id" filter_domain="[('encashment_bank_id', 'ilike', self)]"/>
+                <field name="head_id" filter_domain="[('head_id', 'ilike', self)]"/>
+
+                <separator/>
+<!--                comment-for-upgrade-->
+<!--                <filter string="Local Invoice" name="local_cus" domain="[('invoice_partner_id.vendor_type','=','local')]"/>-->
+<!--                <filter string="Foreign Invoice" name="foreign_cus" domain="[('invoice_partner_id.vendor_type','=','foreign')]"/>-->
+                <separator/>
+                <filter string="BDT" name="currency1" domain="[('foreign_currency_type','=','BDT')]"/>
+                <filter string="USD" name="currency2" domain="[('foreign_currency_type','=','USD')]"/>
+                <filter string="EUR" name="currency3" domain="[('foreign_currency_type','=','EUR')]"/>
+                <filter string="AUD" name="currency4" domain="[('foreign_currency_type','=','AUD')]"/>
+                <filter string="GBP" name="currency5" domain="[('foreign_currency_type','=','GBP')]"/>
+                <separator/>
+                <filter name="draft" string="Draft" domain="[('invoice_state','=','draft')]"/>
+                <filter name="posted" string="Posted" domain="[('invoice_state', '=', 'posted')]"/>
+                <filter name="cancel" string="Cancelled" domain="[('invoice_state', '=', 'cancel')]"/>
+                <separator/>
+                <filter string="SWIFT Received?" name="swift_received" domain="[('swift_message_id','!=', False)]"/>
+                <filter string="SWIFT Not Received?" name="swift_not_received" domain="[('swift_message_id','=', False)]"/>
+                <separator/>
+                <filter string="Encashed?" name="encashed" domain="[('swift_message_id.state','=', 'pay')]"/>
+                <filter string="Not Encashed?" name="not_encashed" domain="[('swift_message_id.state','!=', 'pay')]"/>
+                <separator/>
+                <filter string="Incentive Filed?" name="incentive" domain="[('head_id','!=', False)]"/>
+                <filter string="Incentive Not Filed?" name="not_incentive" domain="[('head_id','=', False)]"/>
+                <group expand="1" string="Group By">
+                    <filter string="Customer" name="partner_id" context="{'group_by':'partner_id'}"/>
+                </group>
+           </search>
+        </field>
+    </record>
+
+    <!--Action -->
+    <record id="cash_incentive_invoice_action" model="ir.actions.act_window">
+        <field name="name">All Invoice</field>
+        <field name="res_model">cash.incentive.invoice</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="cash_incentive.cash_incentive_all_invoice_tree"/>
+        <field name="search_view_id" ref="view_cash_incentive_all_invoice_filter"/>
+        <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Please Create Cash Incentive.
+            </p>
+        </field>
+    </record>
+
+    <!--Action -->
+    <record id="cash_incentive_encashment_invoice_action" model="ir.actions.act_window">
+        <field name="name">Foreign Invoice</field>
+        <field name="res_model">cash.incentive.invoice</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="cash_incentive.view_cash_incentive_invoice_tree"/>
+        <field name="search_view_id" ref="view_cash_incentive_invoice_filter"/>
+        <field name="domain">[('foreign_currency_type', '!=', 'BDT')]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Please Create Cash Incentive.
+            </p>
+        </field>
+    </record>
+
+    <!-- cash_incentive menu -->
+    <menuitem id="sub_menu_cash_incentive_invoice" name="Invoice"  parent="menu_cash_incentive_head" sequence="3" />
+    <menuitem id="sub_menu_swift_message_incentive" name="Foreign Invoice" action="cash_incentive_encashment_invoice_action" parent="sub_menu_cash_incentive_invoice" sequence="1" />
+    <menuitem id="sub_menu_swift_message_all" name="All Invoice" action="cash_incentive_invoice_action" parent="sub_menu_cash_incentive_invoice" sequence="3" />
+
+<!--    accounting menu-->
+    <menuitem id="child_swift_invoice_menu" name="SWIFT Invoices" action="cash_incentive_invoice_action" sequence="2" parent="top_swift_menu_accounting" />
+</odoo>

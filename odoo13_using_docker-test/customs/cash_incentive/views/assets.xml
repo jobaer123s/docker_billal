@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Append CSS to main-->
+    <template id="custom_assets_backend" name="Custom item Color" inherit_id="web.assets_backend">
+         <xpath expr="." position="inside">
+            <link rel="stylesheet" type="text/css"  href="/cash_incentive/static/src/css/style.css" />
+             <script src="/cash_incentive/static/src/js/invoice_upload_tree_view.js" type="text/javascript"/>
+         </xpath>
+    </template>
+</odoo>

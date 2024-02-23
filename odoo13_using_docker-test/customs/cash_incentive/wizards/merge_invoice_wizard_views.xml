@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Merge invoice Wizard Form -->
+    <record id="view_merge_invoice_wizard_form" model="ir.ui.view">
+        <field name='name'>merge.invoice.wizard.form</field>
+        <field name='model'>invoice.merge.auto</field>
+        <field name='arch' type='xml'>
+            <form string='Assign/Create File'>
+                <sheet>
+                    <group>
+                         <group>
+                             <field name="state" required="1" widget="radio"/>
+                         </group>
+                        <group>
+                            <field name="partner_id" required="1" options="{'no_create_edit':1, 'no_quick_create': True}"/>
+                            <!--<field name="swift_customer_name" readonly="1" force_save="1"/>-->
+                            <field invisible="state =='01'" required="state == '02'"  name="file_id" domain="[('partner_id', '=', partner_id)]" options="{'no_open':1,'no_create':1,'no_create_edit':1, 'no_quick_create': True}"/>
+                        </group>
+                    </group>
+                    <group invisible="state == '02'">
+                        <group>
+                            <field name="bank_id" readonly="1" force_save="1" required="state == '01'" options="{'no_open':1,'no_create':1,'no_create_edit':1, 'no_quick_create': True}"/>
+                            <field name="name" required="state == '01'"/>
+                            <field name="customer_address"/>
+                            <field name="institution_address"/>
+                        </group>
+                        <group>
+                            <field name="date" required="state == '01'"/>
+                            <field name="swift_date" readonly="1" force_save="1"/>
+                            <field name="application_deadline" readonly="1" force_save="1"/>
+                            <field name="remaining_days" readonly="1" force_save="1" decoration-danger="remaining_days &lt; 31"/>
+                            <field name="basis_fee_amt" readonly="1" force_save="1"/>
+                        </group>
+                    </group>
+                    <field  style="color:#fff" name="invoice_line_ids">
+                        <tree create="false" editable="top" string="Invoice Lines">
+<!--                            comment-for-upgrade state,type not exist is that model-->
+<!--                            <field style="pointer-events:none;" name="in_invoice_id" domain="[('state', '=', 'posted'),('partner_id', '=', parent.partner_id),('type', '=', 'out_invoice')]" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}"/>-->
+                            <field style="pointer-events:none;" name="in_invoice_id" domain="[('partner_id', '=', parent.partner_id)]" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}"/>
+                            <field style="pointer-events:none;" name="file_id" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}"/>
+<!--                            <field style="pointer-events:none;" name="invoice_id" domain="[('state', '=', 'posted'),('partner_id', '=', parent.partner_id),('type', '=', 'out_invoice')]" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}"/>-->
+                            <field style="pointer-events:none;" name="invoice_date" />
+                            <field style="pointer-events:none;" name="swift_date" />
+                            <field style="pointer-events:none;" name="encashment_date" />
+                            <field name="od_sight_rate" required="1" sum="invoice_amt" style="background-color:#bfecf5;"/>
+
+                            <field style="pointer-events:none;" name="invoice_qty_str" />
+                            <field style="pointer-events:none;" name="currency_id" readonly="1" force_save="1"/>
+                            <field style="pointer-events:none;" string="Invoice (FC)" name="invoice_amt" sum="invoice_amt"/>
+                            <field style="pointer-events:none;" string="Invoice Rate (BDT)" name="usd_rate" sum="usd_rate"/>
+                            <field style="pointer-events:none;" string="Invoice (BDT)" name="invoice_amt_bdt" sum="invoice_amt_bdt"/>
+                            <field style="pointer-events:none;" string="Encashment (FC)" name="swift_amt"  sum="invoice_amt" />
+                            <field style="pointer-events:none;" string="Encashment Rate(BDT)" name="encashment_rate_bdt"  sum="encashment_rate_bdt" />
+                            <field style="pointer-events:none;" string="Encashment (BDT)" name="encashment_amt_bdt"  sum="encashment_amt_bdt" />
+
+                            <field style="pointer-events:none;" name="incentive_amt_fc" sum="invoice_amt"/>
+                            <field style="pointer-events:none;" name="incentive_amt_bdt" sum="invoice_amt" />
+                            <field style="pointer-events:none;" name="encashment_amt_bdt" sum="invoice_amt"/>
+                        </tree>
+                    </field>
+                    <footer>
+                        <button invisible="state == '01'" name="action_assign" string="Assign File" class="oe_highlight" type="object" />
+                        <button invisible="state == '02'" name="action_create" string="Create File" class="oe_highlight" type="object" />
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Merge invoice Wizard Action Button from swift -->
+    <act_window id="merge_action_swift_invoice"
+        name="Assign/Create File"
+        res_model="invoice.merge.auto"
+        binding_model="swift.message"
+        binding_views="list"
+        view_mode="form" target="new"
+        context="{'model_name': 'swift'}"
+    />
+
+    <!-- Merge invoice Wizard Action Button -->
+    <act_window id="merge_action_merge_invoice"
+        name="Assign/Create File"
+        res_model="invoice.merge.auto"
+        binding_model="cash.incentive.invoice"
+        binding_views="list"
+        view_mode="form" target="new"
+    />
+
+    <!-- Merge invoice Wizard Action Window -->
+    <record id="merge_action" model="ir.actions.act_window">
+        <field name="name">Assign File to invoices</field>
+        <field name="res_model">cash.incentive.invoice</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_merge_invoice_wizard_form"/>
+    </record>
+</odoo>

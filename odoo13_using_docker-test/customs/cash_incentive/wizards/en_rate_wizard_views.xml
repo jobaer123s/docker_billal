@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <data>
+        <record id="view_en_rate_form" model="ir.ui.view">
+            <field name="name">en.rate.wizard.form</field>
+            <field name="model">en.rate.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Encashment Rate">
+                    <group>
+                        <group>
+                            <field name="is_erq_applicable"/>
+                            <field name="swift_id" invisible="type ==  '1'" readonly="1" options="{'no_open':True,'no_create':True}"/>
+                            <!--<field name="bank_id" attrs="{'invisible': [('type', '!=', '1')], 'required': [('type', '=', '1')]}" options="{'no_open':True,'no_create':True}"/>-->
+                            <field name="bank_id" options="{'no_open':True,'no_create':True}" readonly="1" force_save="1"/>
+                            <field name="currency_id" readonly="1" force_save="1" options="{'no_open':True,'no_create':True}"/>
+                            <field name="date" readonly="1" options="{'no_open':True,'no_create':True}"/>
+                            <field name="type" invisible="1" />
+                            <!--<field name="invoice_amt" readonly="1" force_save="1"/>-->
+                            <br/>
+                            <field name="swift_amount" readonly="1" force_save="1" style="font-weight:bold;"/>
+                            <field name="swift_amt_bdt" readonly="1" force_save="1" style="font-weight:bold;"/>
+                            <field name="encashment_charge" readonly="1" force_save="1"/>
+                            <field name="encashment_charge_bdt" readonly="1" force_save="1" />
+                            <br/>
+                            <field name="encashment_bank_id" required="1" options="{'no_open':True,'no_create':True}"/>
+                            <field name="encashment_date" required="1" />
+                            <field name="encashment_rate" required="1" />
+                            <field name="encashment_amount" style="font-weight:bold;" invisible="is_erq_applicable ==True" readonly="1" force_save="1" help="Received Amount BDT"/>
+
+                            <!-- <field name="swift_rate_bdt" required="1"/>-->
+                            <!--<field name="bank_charge" />
+                            <field name="other_charge" />-->
+                            <field name="difference_amnt_bdt" readonly="1" force_save="1"/>
+                            <!--<field name="remaining_swift_amount" />-->
+                            <field name="remaining_swift_amount_bdt" readonly="1" force_save="1" help="Bank Encashement BDT" style="font-weight:bold;" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="erq_bank_id" required="is_erq_applicable == True" invisible="is_erq_applicable == False" options="{'no_open':True,'no_create':True}"/>
+                            <field name="erq_percentage" required="is_erq_applicable == True" invisible="is_erq_applicable == False"/>
+                            <field name="bdt_encashment_percentage" readonly="1" force_save="1" invisible="is_erq_applicable == False" style="font-weight:bold;"/>
+                            <br/>
+                            <field name="erq_amount_fc"  required="is_erq_applicable == True" invisible="is_erq_applicable == False" />
+                            <field name="fc_encashment_amount" readonly="1" force_save="1" invisible="is_erq_applicable == False" style="font-weight:bold;"/>
+                            <br/>
+                            <field name="inter_bank_rate_bdt" required="1" invisible="is_erq_applicable == False"/>
+                            <field name="erq_amount_bdt" readonly="1" force_save="1" invisible="is_erq_applicable == False" />
+                            <field name="bdt_encashment_amount" readonly="1" force_save="1" invisible="is_erq_applicable == False" style="font-weight:bold;"/>
+                            <field name="total_erq_encashment_amount" readonly="1" force_save="1" invisible="is_erq_applicable == False" style="font-weight:bold;"/>
+                        </group>
+                    </group>
+
+                    <group>
+
+                        <field style="color:#fff" name="invoice_ids">
+                            <tree create="false" editable="bottom" delete="false" string="Invoice Lines">
+                                <field style="pointer-events:none;" name="invoice_id" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}"/>
+                                <field style="pointer-events:none;" name="is_erq_applicable" invisible="1"/>
+                                <field style="pointer-events:none;" name="swift_fc" sum="swift_fc"/>
+                                <field style="pointer-events:none;" name="encash_fc" sum="encash_fc"/>
+                                <field name="erq_fc" sum="erq_fc"/>
+                            </tree>
+                            <form create="false" edit="false" delete="false" string="Invoice Lines">
+                                <field style="pointer-events:none;" name="invoice_id" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}"/>
+                                <field style="pointer-events:none;" name="swift_fc" sum="swift_fc"/>
+                                <field style="pointer-events:none;" name="encash_fc" sum="encash_fc"/>
+                                <field name="erq_fc" sum="erq_fc"/>
+                            </form>
+                        </field>
+                        <field name="erq_amount_fc_invoices" readonly="1" force_save="1"/>
+                    </group>
+
+                    <footer>
+                        <button invisible="type ==  '1'"  name="confirm_rate" confirm="Are you sure you want to Confirm?" string="Save" type="object" class="btn-primary"/>
+                        <button name="confirm_next" confirm="Are you sure you want to Confirm?" string="Save  &amp; Next " type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- Merge swift Wizard Action Button -->
+        <act_window id="merge_action_merge_incentive"
+            name="Encashment"
+            res_model="en.rate.wizard"
+            binding_model="swift.message"
+            binding_views="list"
+            view_mode="form" target="new" context="{'multiple': '1'}"
+        />
+
+        <!-- Merge invoice Wizard Action Window -->
+        <record id="encashment_action" model="ir.actions.act_window">
+            <field name="name">Encashment</field>
+            <field name="res_model">swift.message</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_en_rate_form"/>
+        </record>
+    </data>
+</odoo>

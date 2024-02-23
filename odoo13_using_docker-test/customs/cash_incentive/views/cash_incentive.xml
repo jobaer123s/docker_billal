@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- cash_incentive Form View -->
+	<record id="view_cash_incentive_head_form" model="ir.ui.view">
+        <field name="name">cash.incentive.head.form</field>
+        <field name="model">cash.incentive.head</field>
+        <field name="arch" type="xml">
+            <form string="Cash Incentive Form">
+                <header>
+                    <button name="action_confirm" id="action_confirm" class="btn-primary"
+                            type="object" string="Confirm" invisible="state != 'draft'" />
+                    <button name="action_draft" id="action_draft" class="btn-secondary"
+                            type="object" string="Set to Draft" invisible="state not in ['confirm','cancel']" />
+                    <button name="action_approve" id="action_approve" class="btn-primary"
+                            type="object" confirm="Are you sure you want to Approve?" string="Approve" invisible="state !='confirm'" />
+                    <button name="action_done" id="action_done" class="btn-primary"
+                            type="object" confirm="Are you sure you want to Done?" string="Done" invisible="state != 'approve'" />
+<!--                    <button name="incentive_report_excel" type="object" string="Print" attrs="{'invisible': [('state', 'in', ['draft','cancel'])]}" />-->
+                    <button name="action_cancel" confirm="Are you sure you want to Cancel?" type="object" string="Cancel" invisible="state != 'draft'"/>
+                   <field name="state" widget="statusbar" statusbar_visible="draft,confirm,approve,done"/>
+                </header>
+                <sheet>
+<!--                    <div class="oe_title">-->
+<!--                        <h1>-->
+<!--                            <field readonly="state != 'draft'" name="name" required="1"/>-->
+<!--                        </h1>-->
+<!--                    </div>-->
+                    <group>
+                        <group>
+                            <field name="code" readonly="1" invisible="code == False"/>
+                            <field name="partner_id" required="1" options="{'no_create':1, 'no_quick_create': True}" readonly="state != 'draft'"/>
+                            <field name="swift_customer_name" readonly="state != 'draft'"/>
+                            <field name="bank_id" required="1" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}" readonly="state != 'draft'"/>
+                            <field name="name" required="1" readonly="state != 'draft'"/>
+                            <field name="customer_address" readonly="state != 'draft'"/>
+                            <field name="institution_address" readonly="state != 'draft'"/>
+                            <field name="customer_country_id" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}" readonly="1" force_save="1"/>
+                        </group>
+                        <group>
+                            <field name="date" readonly="state != 'draft'"/>
+<!--                            <field name="swift_date" required="1" readonly="state != 'draft'"/>-->
+                            <field name="application_deadline" readonly="1" force_save="1"/>
+                            <field name="remaining_days" readonly="1" decoration-danger="remaining_days &lt; 31"/>
+                            <field name="fc_currency_id" readonly="state != 'draft'" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}"/>
+                            <field name="od_sight_rate" readonly="state != 'draft'"/>
+                            <field name="swift_ids" domain="[('state', 'in', ['confirm','approve']),('partner_id', '=', partner_id)]"
+                                   widget="many2many_tags" readonly="state != 'draft'" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}"/>
+                            <field name="incentive_rate_fc" readonly="state != 'draft'"/>
+                             <label for="contract_ids"/>
+                            <div class="o_row" name="contract_id">
+                                <field invisible="1" name="contract_id" domain="[('partner_id', '=', partner_id)]" context="{'default_partner_id': partner_id}" />
+                                <field widget="many2many_tags" name="contract_ids" domain="[('partner_id', '=', partner_id)]" context="{'default_partner_id': partner_id}"/>
+                                <button style="color:#fff" invisible="contract_number == False" type="object" string="Update" class="btn-primary oe_link oe_inline"
+                                        name="get_contract_data"/>
+<!--                                <button style="color:#fff"  type="object" string="Update One time" class="btn-primary oe_link oe_inline"-->
+<!--                                        name="update_contract_data"/>-->
+                            </div>
+<!--                            <field name="contract_id" domain="[('partner_id', '=', partner_id)]" context="{'default_partner_id':partner_id}" readonly="state != 'draft'" />-->
+<!--                            <field name="encashment_rate_bdt" readonly="state != 'draft'"/>-->
+<!--                            <field name="date_credited_beneficiaries" readonly="state != 'draft'"/>-->
+<!--                            <field name="reporting_st_to_bb" readonly="state != 'draft'"/>-->
+<!--                            <field name="ref_online_to_bb" readonly="state != 'draft'"/>-->
+                            <!--<field name="create_uid" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}" readonly="1"/>-->
+<!--                            <field name="create_date" readonly="1"/>-->
+                        </group>
+                    </group>
+                    <button name="action_download_all_docx_file" style="margin-right:10px; margin-bottom: 10px;"
+							    string="Download All files as Word" type="object" class="btn-primary"/>
+                    <notebook>
+                        <page class="cash_incentive_tab_node" style="background:#ebedff" string="Invoice">
+                            <field style="color:#fff" readonly="state != 'draft'" name="invoice_line_ids">
+                                <tree default_order='invoice_id asc' string="Invoice Lines" editable="bottom" delete="false">
+                                    <field name="invoice_id" domain="[('state', '=', 'posted'),('partner_id', '=', parent.partner_id),('move_type', '=', 'out_invoice')]" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}"/>
+<!--                                    <field name="date" readonly="1" force_save="1"/>-->
+<!--                                    <field name="swift_message_id" readonly="1" force_save="1"/>-->
+                                    <field name="invoice_date" />
+                                    <field name="invoice_qty_str" />
+                                    <field name="invoice_amt" sum="invoice_amt"/>
+                                    <field name="swift_amt" sum="swift_amt"/>
+                                    <field name="foreign_currency_type" string="Currency"/>
+                                    <field name="swift_message_id"/>
+                                    <field name="swift_date" readonly="1" force_save="1"/>
+                                    <field name="od_sight_rate" />
+                                    <field name="incentive_amt_fc" />
+                                    <field name="incentive_amt_bdt" />
+                                    <field name="encashment_amt_fc" optional="hide"/>
+                                    <field name="encashment_rate_bdt" />
+                                    <field name="encashment_amt_bdt" sum="encashment_amt_bdt"/>
+
+                                    <field name="erq_rate_bdt" optional="hide"/>
+                                    <field name="erq_amt_fc" optional="hide"/>
+                                    <field name="erq_amt_bdt" sum="erq_amt_bdt"/>
+
+                                    <field name="date_credited_beneficiaries" readonly="0"/>
+                                    <field name="reporting_st_to_bb" readonly="0"/>
+                                    <field name="ref_online_to_bb" readonly="0"/>
+                                    <field name="contract_id" invisible="1" domain="[('partner_id', '=', parent.partner_id)]" context="{'default_partner_id': parent.partner_id}" />
+                                    <field widget="many2many_tags" name="contract_ids" domain="[('partner_id', '=', parent.partner_id)]" context="{'default_partner_id': parent.partner_id}"/>
+<!--                                    <field name="contract_number" />-->
+                                    <field name="contract_date_str" readonly="1" force_save="1" />
+                                    <field name="contract_price_str" readonly="1" force_save="1" />
+
+<!--                                    <field name="contract_number" readonly="1" force_save="1" string="Contract Numbers"/>-->
+<!--                                    <field name="contract_date_str" readonly="1" force_save="1" />-->
+
+<!--                                    <field name="encashment_date" readonly="1" force_save="1"/>-->
+
+
+
+<!--&lt;!&ndash;                                    <field name="basis_fee_amt" />&ndash;&gt;-->
+
+<!--                                    <field name="currency_id" readonly="1" force_save="1"/>-->
+<!--                                    <field name="encashment_amt_bdt" />-->
+<!--                                    <field name="application_deadline" />-->
+
+<!--                                    <field name="reporting_st_to_bb" />-->
+<!--                                    <field name="ref_online_to_bb" />-->
+                                    <button name="action_open_edit_invoice" type="object" string="Edit" class="btn-primary" invisible="parent.state != 'draft'"/>
+                                    
+                                </tree>
+                            </field>
+
+                            <separator string="Attachments" colspan="2"/>
+                            <group>
+                                <field readonly="state != 'draft'" name="invoice_file_file" filename="invoice_file_name"/>
+                            </group>
+
+                            <group>
+                                <field force_save="1" name="contract_price_str" readonly="state != 'draft'"/>
+                                <field force_save="1" name="contract_number" readonly="state != 'draft'"/>
+                                <field force_save="1" name="contract_date_str" readonly="state != 'draft'"/>
+                                <field force_save="1" name="basis_fee_amt" readonly="state != 'draft'"/>
+                            </group>
+                        </page>
+                        <!--<page class="cash_incentive_tab_node" style="background:#d2ffff" string="SWIFT Message">
+                            <group>
+                                <field readonly="state != 'draft'" name="remiter_bank_name"/>
+                                <field readonly="state != 'draft'" name="remiter_bank_address"/>
+                            </group>
+                        </page>-->
+                         <!-- swift files download-->
+                        <page class="cash_incentive_tab_node" style="background:#e7d7b6" string="SWIFT and ICT Download">
+                            <button context="{'type': 'FORM_GHA', 'with_head':True}" name="action_get_swift_files" style="margin-right:10px; margin-bottom: 10px;"
+							    string="Get SWIFT Files" type="object" class="btn-primary"/>
+
+                            <field readonly="1" force_save="1" style="color:#fff"  name="swift_file_line_ids">
+                                <tree  string="SWIFT Lines"  delete="false">
+                                    <field name="swift_id" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}"/>
+                                    <field  name="date"/>
+                                    <field  name="inv_names"/>
+                                    <field  name="swift_file" filename="swift_file_name" widget="binary"/>
+                                    <field  name="ict_file" filename="ict_file_name" widget="binary"/>
+                                    <field  name="rate_file" filename="rate_file_name" widget="binary"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <!--prc ======================================= -->
+                        <page class="cash_incentive_tab_node" style="background:#d2d6ff" string="PRC">
+                            <separator string="Attachments" colspan="2"/>
+                            <group>
+                                <group>
+                                    <field readonly="state != 'draft'" name="prc_ref_code" />
+                                    <field readonly="state != 'draft'" name="prc_date" />
+                                </group>
+                                <group>
+                                    <field readonly="state != 'draft'" name="prc_file_file" filename="prc_file_file_name"/>
+                                </group>
+                            </group>
+                            <br/>
+
+                            <button context="{'type': 'PRC', 'with_head':True}" name="action_print_with_head" style="margin-right:10px;"
+							        string="Print With Letter Head" type="object" class="btn-primary mx-1"/>
+                            <button context="{'type': 'PRC', 'with_head':False}" name="action_print_with_head" style="margin-right:10px;"
+							        string="Print Without Letter Head" type="object" class="btn-primary mx-1"/>
+                            <button context="{'type': 'PRC', 'with_head':False}" name="action_download_docx_file1" style="margin-right:10px;"
+							        string="Download as Word" type="object" class="btn-primary mx-1"/>
+<!--                            <button context="{'type': 'PRC', 'with_head':False}" name="action_download_docx_file" style="margin-right:10px;"-->
+<!--							        string="Print (Docx)" type="object" class="btn-primary"/>-->
+
+                            <button name="action_refresh_prc3"
+							        string="Get Template" type="object" class="btn-primary mx-1"/>
+                            <!--<button name="action_refresh_prc_docx" style="margin-right:10px;"
+							        string="Word Downlaod" type="object" class="btn-primary"/>-->
+
+                            <br/>
+                            <br/>
+                            <field string="Letter" readonly="state != 'draft'" name="prc_letter_description" placeholder="PRC Letter Description"/>
+
+                        </page>
+                        <!--    Forwarding Letter for BASIS-->
+                        <page class="cash_incentive_tab_node" style="background:#e4ffe1" string="Forwarding Letter for BASIS">
+                            <separator string="Attachments" colspan="2"/>
+                            <group>
+                                <group>
+                                    <field readonly="state != 'draft'" name="flbs_ref_code" />
+                                </group>
+                                <group>
+                                    <field readonly="state != 'draft'" name="flbs_file_file" filename="flbs_file_file_name"/>
+                                </group>
+                            </group>
+                            <br/>
+                            <button context="{'type': 'FLBS', 'with_head':True}" name="action_print_with_head" style="margin-right:10px"
+							string="Print With Letter Head" type="object" class="btn-primary mx-1"/>
+                            <button context="{'type': 'FLBS', 'with_head':False}" name="action_print_with_head" style="margin-right:10px;"
+							        string="Print Without Letter Head" type="object" class="btn-primary mx-1"/>
+                            <button context="{'type': 'FLBS', 'with_head':False}" name="action_download_docx_file1" style="margin-right:10px;"
+							        string="Download as Word" type="object" class="btn-primary mx-1"/>
+                            <button name="action_refresh_flbs"
+							string="Get Template" type="object" class="btn-primary mx-1"/>
+                            <br/>
+                            <br/>
+                            <field string="Letter" readonly="state != 'draft'" name="flbs_letter_description" placeholder="FLBS Letter Description"/>
+                        </page>
+                        <!--    ka-->
+                        <page class="cash_incentive_tab_node" style="background:#feffc3" string="Form Ka for BASIS">
+                            <button context="{'type': 'BASIS_KA', 'with_head':True}" name="action_print_with_head" style="margin-right:10px"
+							string="Print With Letter Head" type="object" class="btn-primary mx-1"/>
+                            <button context="{'type': 'BASIS_KA', 'with_head':False}" name="action_print_with_head" style="margin-right:10px;"
+							        string="Print Without Letter Head" type="object" class="btn-primary mx-1"/>
+                            <button context="{'type': 'BASIS_KA', 'with_head':False}" name="action_download_docx_file1" style="margin-right:10px;"
+							        string="Download as Word" type="object" class="btn-primary mx-1"/>
+                            <button name="action_refresh_form_ka"
+							string="Get Template" type="object" class="btn-primary mx-1"/>
+                            <br/>
+                            <br/>
+                            <field string="Letter" readonly="state != 'draft'" name="form_ka_basis_description" placeholder="Form Ka Basis Description"/>
+                        </page>
+                        <!--    Kha-->
+                        <page class="cash_incentive_tab_node" style="background:#ffd9bd" string="Form Kha for BASIS">
+                            <separator string="Attachments" colspan="2"/>
+                            <group>
+                                <group>
+                                    <field readonly="state != 'draft'" name="form_kha_ref_code" />
+                                </group>
+                                <group>
+                                    <field readonly="state != 'draft'" name="form_kha_file_file" filename="form_kha_file_file_name"/>
+                                </group>
+                            </group>
+                            <br/>
+                            <button context="{'type': 'BASIS_KHA', 'with_head':True}" name="action_print_with_head" style="margin-right:10px;"
+							        string="Print With Letter Head" type="object" class="btn-primary mx-1"/>
+                            <button context="{'type': 'BASIS_KHA', 'with_head':False}" name="action_print_with_head" style="margin-right:10px;"
+							        string="Print Without Letter Head" type="object" class="btn-primary mx-1"/>
+                             <button context="{'type': 'BASIS_KHA', 'with_head':False}" name="action_download_docx_file1" style="margin-right:10px;"
+							        string="Download as Word" type="object" class="btn-primary mx-1"/>
+
+                            <button name="action_refresh_basis_kha"
+							        string="Get Template" type="object" class="btn-primary"/>
+                            <br/>
+                            <br/>
+                            <field string="Letter" readonly="state != 'draft'" name="form_kha_basis_description" placeholder="Form Kha Basis Description"/>
+                        </page>
+                        <!--    ICT-->
+<!--                        <page class="cash_incentive_tab_node" style="background:#ebfffb" string="Form-C (ICT)">-->
+<!--                            <button context="{'type': 'FORM_C', 'with_head':True}" name="action_print_with_head" style="margin-right:10px"-->
+<!--							string="Print With Letter Head" type="object" class="btn-primary"/>-->
+<!--                            <button context="{'type': 'FORM_C', 'with_head':False}" name="action_print_with_head" style="margin-right:10px;"-->
+<!--							        string="Print Without Letter Head" type="object" class="btn-primary"/>-->
+<!--                             <button context="{'type': 'FORM_C', 'with_head':False}" name="action_download_docx_file1" style="margin-right:10px;"-->
+<!--							        string="Download as Word" type="object" class="btn-primary"/>-->
+<!--                            <button name="action_refresh_form_c"-->
+<!--							string="Get Template" type="object" class="btn-primary"/>-->
+<!--                            <br/>-->
+<!--                             <field string="Letter" readonly="state != 'draft'" name="form_c_description"/>-->
+<!--                        </page>-->
+                        <!--Forwarding Letter for Bank-->
+                        <page class="cash_incentive_tab_node" style="background:#e1e1e1" string="Forwarding Letter for Bank">
+                            <separator string="Attachments" colspan="2"/>
+                            <group>
+                                <group>
+                                    <field readonly="state != 'draft'" name="flbk_ref_code" />
+                                </group>
+                                <group>
+                                    <field readonly="state != 'draft'" name="flbk_file_file" filename="flbk_file_file_name"/>
+                                </group>
+                            </group>
+                            <br/>
+                            <button context="{'type': 'FLBK', 'with_head':True}" name="action_print_with_head" style="margin-right:10px"
+							        string="Print With Letter Head" type="object" class="btn-primary mx-1"/>
+                            <button context="{'type': 'FLBK', 'with_head':False}" name="action_print_with_head" style="margin-right:10px;"
+							        string="Print Without Letter Head" type="object" class="btn-primary mx-1"/>
+                             <button context="{'type': 'FLBK', 'with_head':False}" name="action_download_docx_file1" style="margin-right:10px;"
+							        string="Download as Word" type="object" class="btn-primary mx-1"/>
+                            <button name="action_refresh_flbk"
+							        string="Get Template" type="object" class="btn-primary mx-1"/>
+                            <br/>
+                            <br/>
+                            <field string="Letter" readonly="state != 'draft'" name="flbk_letter_description" placeholder="FLBK Letter Description"/>
+
+                        </page>
+                        <!--form ga-->
+                        <page class="cash_incentive_tab_node" style="background:#ffdef0" string="Form Ga for Bank">
+                            <button context="{'type': 'FORM_GA', 'with_head':True}" name="action_print_with_head" style="margin-right:10px"
+							string="Print With Letter Head" type="object" class="btn-primary mx-1"/>
+                            <button context="{'type': 'FORM_GA', 'with_head':False}" name="action_print_with_head" style="margin-right:10px;"
+							        string="Print Without Letter Head" type="object" class="btn-primary mx-1"/>
+                            <button context="{'type': 'FORM_GA', 'with_head':False}" name="action_download_docx_file1" style="margin-right:10px;"
+							        string="Download as Word" type="object" class="btn-primary mx-1"/>
+
+                            <button name="action_refresh_form_ga"
+							string="Get Template" type="object" class="btn-primary mx-1"/>
+                            <br/>
+                            <br/>
+                            <field string="Letter" readonly="state != 'draft'" name="form_ga_description" placeholder="Form Ga Description"/>
+                        </page>
+                        <!-- form gha-->
+                        <page class="cash_incentive_tab_node" style="background:#ffb4b4" string="Form Gha for Bank">
+                            <button context="{'type': 'FORM_GHA', 'with_head':True}" name="action_print_with_head" style="margin-right:10px"
+							string="Print With Letter Head" type="object" class="btn-primary mx-1"/>
+                            <button context="{'type': 'FORM_GHA', 'with_head':False}" name="action_print_with_head" style="margin-right:10px;"
+							        string="Print Without Letter Head" type="object" class="btn-primary mx-1"/>
+                            <button context="{'type': 'FORM_GHA', 'with_head':False}" name="action_download_docx_file1" style="margin-right:10px;"
+							        string="Download as Word" type="object" class="btn-primary mx-1"/>
+
+                            <button name="action_refresh_form_gha"
+							string="Get Template" type="object" class="btn-primary mx-1"/>
+                            <br/>
+                            <br/>
+                            <field string="Letter" readonly="state != 'draft'" name="form_gha_description" placeholder="Form Gha Description"/>
+                        </page>
+
+                    </notebook>
+
+<!--                    <footer attrs="{'invisible': [('po_button_enable',  '=', False)]}">-->
+<!--                        <button name="create_po" id="create_po" class="btn-primary pull-right" type="object" string="Foreign Purchase Order"-->
+<!--                        confirm="Are you sure you want to create Purchase Order?" context="{'po_type': 'foreign'}" />-->
+
+<!--                        <button name="create_po" id="create_po" class="btn-primary pull-right" type="object" string="Local Purchase Order"-->
+<!--                        confirm="Are you sure you want to create Purchase Order?" context="{'po_type': 'local'}" style="position:relative; right:6px"/>-->
+<!--                    </footer>-->
+                </sheet>
+
+                 <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers" />
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+
+            </form>
+        </field>
+    </record>
+
+    <!-- cash_incentive Tree View -->
+    <record id="view_cash_incentive_head_tree" model="ir.ui.view">
+         <field name="name">cash.incentive.head.tree</field>
+         <field name="model">cash.incentive.head</field>
+         <field name="arch" type="xml">
+             <tree decoration-info="(remaining_days  &gt; 30) and (remaining_days  &lt; 91)" decoration-danger="remaining_days &lt; 31" string="Cash Incentive List">
+                <field name="name" />
+                 <!--<field name="partner_id" />-->
+                 <field name="swift_customer_name"/>
+                 <field name="date"/>
+                 <field name="bank_id"/>
+                <field name="inv_count" string="Inv.Cnt"/>
+                <field name="inv_names" optional='hide'/>
+                <field name="swift_count" string="SWIFT Cnt." optional='hide'/>
+                <field name="swift_amount_fc"/>
+                <field name="swift_date_str" optional='hide'/>
+                <field name="fc_currency_id"/>
+                <field name="application_deadline"/>
+                <field name="remaining_days" />
+                 <field name="incentive_amount_bdt" optional='hide' sum="incentive_amount_bdt" />
+                <field name="basis_fee_amt" sum="basis_fee_amt" />
+                <field name="incentive_amount_fc" optional='hide'/>
+                <!--<field name="contract_no" optional='hide'/>-->
+                <field name="contract_date_str" optional='hide'/>
+                <field name="contract_number" optional='hide'/>
+<!--                <field name="contract_ids" widget="many2many_tags" optional='hide'/>-->
+                <field name="od_sight_rate" optional='hide'/>
+                <field name="state"/>
+             </tree>
+         </field>
+    </record>
+
+    <!-- Filter -->
+    <record id="view_cash_incentive_filter_search" model="ir.ui.view">
+        <field name="name">view.cash.incentive.head.filter</field>
+        <field name="model">cash.incentive.head</field>
+        <field name="arch" type="xml">
+            <search string="Search Cash Incentive">
+                <field name="name" filter_domain="[('name', 'ilike', self)]"/>
+                <field name="partner_id" filter_domain="[('partner_id', 'ilike', self)]"/>
+                <field name="swift_customer_name" filter_domain="[('swift_customer_name', 'ilike', self)]"/>
+                <field name="bank_id" filter_domain="[('bank_id', 'ilike', self)]"/>
+                <field name="inv_names" filter_domain="[('inv_names', 'ilike', self)]"/>
+                <field name="swift_date_str" filter_domain="[('swift_date_str', 'ilike', self)]"/>
+                <field name="date" filter_domain="[('date', 'ilike', self)]"/>
+                <field name="application_deadline" filter_domain="[('application_deadline', 'ilike', self)]"/>
+<!--                <field name="state" string="State" filter_domain="[('state', 'ilike', self)]"/>-->
+
+                <filter name="no_invoice" string="No Invoice?" domain="[('inv_count', 'ilike', 1)]"/>
+                <separator/>
+                <filter name="no_swift" string="No SWIFT?" domain="[('swift_count', 'ilike', 1)]"/>
+                <separator/>
+                <filter name="remaining" string="Upto 30 Days" domain="[('remaining_days', 'ilike', 30)]"/>
+                <filter name="remaining1" string="Upto 45 Days" domain="[('remaining_days', 'ilike', 45)]"/>
+                <filter name="remaining2" string="Upto 60 Days" domain="[('remaining_days', 'ilike', 60)]"/>
+                <filter name="remaining3" string="Upto 90 Days" domain="[('remaining_days', 'ilike', 90)]"/>
+                <filter name="remaining4" string="Upto 120 Days" domain="[('remaining_days', 'ilike', 120)]"/>
+                <filter name="remaining5" string="Upto 180 Days" domain="[('remaining_days', 'ilike', 180)]"/>
+
+                 <group expand="1" string="Group By">
+                    <filter string="Customer" name="partner_id" context="{'group_by':'partner_id'}"/>
+                    <filter string="Bank" name="bank_id" context="{'group_by':'bank_id'}"/>
+<!--                    <filter string="Encashed?" name="encashed" domain="[('state', '=', 'pay')]" context="{'group_by':'state'}"/>-->
+<!--                    <filter string="Incentive Filed?" name="incentive" context="{'group_by':'incentive_file_no'}"/>-->
+                </group>
+           </search>
+        </field>
+    </record>
+
+    <!--Action -->
+    <record id="cash_incentive_action" model="ir.actions.act_window">
+        <field name="name">Cash Incentive</field>
+        <field name="res_model">cash.incentive.head</field>
+        <field name="view_mode">tree,form</field>
+          <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Please Create Cash Incentive.
+            </p>
+        </field>
+    </record>
+
+    <!-- cash_incentive menu -->
+    <menuitem id="sub_menu_cash_incentive_head" name="Cash Incentive" action="cash_incentive_action" parent="menu_cash_incentive_head" sequence="2" />
+<!--    <menuitem id="sub_menu_cash_incentive_child" name="Cash Incentive" action="cash_incentive_action" parent="sub_menu_cash_incentive_head" sequence="8" />-->
+
+</odoo>

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- client_contract Form View -->
+	<record id="view_client_contract_form" model="ir.ui.view">
+        <field name="name">client.contract.form</field>
+        <field name="model">client.contract</field>
+        <field name="arch" type="xml">
+            <form string="Client Contract Form">
+                <header>
+                    <button name="action_confirm" id="action_confirm" class="btn-primary"
+                            type="object" string="Confirm" invisible="state  != 'draft'" />
+                    <button name="action_draft" id="action_draft" class="btn-secondary"
+                            type="object" string="Set to Draft" invisible="state  != 'confirm'" />
+                    <button name="action_approve" id="action_approve" class="btn-primary"
+                            type="object" confirm="Are you sure you want to Approve?" string="Approve" invisible="state  != 'confirm'" />
+                    <button name="action_cancel" confirm="Are you sure you want to Cancel?" type="object" string="Cancel" invisible="state  != 'draft'" />
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirm,approve"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="reference" />
+                            <field name="code" readonly="1" force_save="1" invisible="code == False"/>
+                            <field name="type" readonly="state  != 'draft'" />
+                            <field name="partner_id" readonly="state  != 'draft'"  />
+                            <field name="swift_customer_name" required="1" readonly="state  != 'draft'"  />
+                            <field name="currency_id" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}" readonly="state  != 'draft'"/>
+                            <field name="range" readonly="state  != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="date" readonly="state  != 'draft'"/>
+                            <field name="end_date" readonly="state  != 'draft'"/>
+                            <field name="length_of_year" readonly="1" force_save="1"/>
+                            <field name="other_details" readonly="state  != 'draft'"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Product Line">
+                            <field readonly="state  != 'draft'" name="contract_line_ids">
+                                <tree string="Invoice Lines" editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="uom_id" />
+                                    <field name="quantity_type" required="1" />
+                                    <field name="quantity" required="1"/>
+                                    <field name="sale_price" required="1"/>
+                                    <field name="total_amount" readonly="1" force_save="1"/>
+                                </tree>
+                            </field>
+
+                            <group  style="margin-right:10px" class="oe_subtotal_footer">
+<!--                                <field name="total_amount" readonly="1" force_save="1"/>-->
+                                <field name="total_amount" widget="monetary" readonly="1" force_save="1"
+							options="{'currency_field': 'currency_id'}" />
+                            </group>
+
+                        </page>
+                    </notebook>
+                    <separator string="Attachments" colspan="2"/>
+                        <group>
+                            <field readonly="state  != 'draft'" name="contract_file" filename="contract_file_name"/>
+                        </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!--Tree View -->
+    <record id="view_client_contract_tree" model="ir.ui.view">
+         <field name="name">client.contract.tree</field>
+         <field name="model">client.contract</field>
+         <field name="arch" type="xml">
+             <tree string="Client Contract List">
+                 <field name="reference"/>
+                 <field name="code"/>
+                 <field name="type"/>
+                 <field name="partner_id"/>
+                 <field name="swift_customer_name"/>
+                 <field name="date"/>
+                 <field name="currency_id"/>
+                 <field name="range"/>
+                 <field name="end_date"/>
+                 <field name="state"/>
+             </tree>
+         </field>
+    </record>
+
+    <!-- Filter -->
+    <record id="view_client_contract_filter" model="ir.ui.view">
+        <field name="name">view.client.contract.filter</field>
+        <field name="model">client.contract</field>
+        <field name="priority" eval="15"/>
+        <field name="arch" type="xml">
+            <search string="Search Client Contract">
+                <field name="code" filter_domain="[('code', 'ilike', self)]"/>
+                <field name="type" filter_domain="[('type', 'ilike', self)]"/>
+                <field name="partner_id" filter_domain="[('partner_id', 'ilike', self)]"/>
+                <field name="swift_customer_name" filter_domain="[('swift_customer_name', 'ilike', self)]"/>
+                <field name="reference" filter_domain="[('reference', 'ilike', self)]"/>
+           </search>
+        </field>
+    </record>
+
+    <!--Action -->
+    <record id="client_contract_action" model="ir.actions.act_window">
+        <field name="name">Client Contract</field>
+        <field name="res_model">client.contract</field>
+        <field name="view_mode">tree,form</field>
+          <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Please Create Client Contract.
+            </p>
+        </field>
+    </record>
+
+    <!-- client_contract menu -->
+    <menuitem id="menu_client_contract_po"
+          name="Contract/PO"
+          sequence="0"
+          action="client_contract_action"
+          parent="account.menu_finance_receivables" />
+
+    <record id="invoice_service_action" model="ir.actions.act_window">
+        <field name="name">Invoice</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[]</field>
+        <field name="context">{'is_service': True, 'default_type':'out_invoice'}</field>
+    </record>
+
+    <!-- client_contract menu -->
+    <menuitem id="menu_invoice_contract_po"
+          name="Contract Invoices"
+          sequence="1"
+          action="invoice_service_action"
+          parent="account.menu_finance_receivables" />
+</odoo>

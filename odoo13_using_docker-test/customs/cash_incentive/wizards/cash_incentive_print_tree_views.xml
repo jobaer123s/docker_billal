@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_cash_incentive_print_wizards_print_wizard_form" model="ir.ui.view">
+        <field name='name'>cash.incentive.print.wizards.form</field>
+        <field name='model'>cash.incentive.print.wizards</field>
+        <field name='arch' type='xml'>
+            <form string='Automatic Merge Wizard'>
+                <sheet>
+<!--                    <group col="1">-->
+<!--                        <h3 class="mb-3">-->
+<!--                            Are you sure you want to Print PDF?-->
+<!--                        </h3>-->
+<!--                    </group>-->
+
+                    <group>
+                        <group>
+                            <field name="type" widget="radio"/>
+                        </group>
+                        <group>
+                            <field name="report_name" widget="radio"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button context="{'with_head':True}" name="action_print_pdf" string="Print With Head" class="oe_highlight" type="object" invisible="type == '02' or report_name == '08'"/>
+                        <button context="{'with_head':False}" name="action_print_pdf" string="Print Without Head" class="oe_highlight" type="object" invisible="type == '02' or report_name == '08'"/>
+                        <button name="action_print_pdf" string="Print Word" class="oe_highlight" type="object" invisible="type != '02' or report_name in ['06','07','08']"/>
+                        <button name="action_print_pdf_gha" string="Print Word" class="oe_highlight" type="object" invisible="type != '02' or report_name not in ['06','07']"/>
+                        <button name="action_download_all_docx_file" string="Print Word" class="oe_highlight" type="object" invisible="type == '01' or report_name !=  '08'"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <act_window id="cash_incentive_print_wizards_print_action"
+        name="Print Cash Incentive PDF/Word Report"
+        res_model="cash.incentive.print.wizards"
+        binding_model="cash.incentive.head"
+        binding_views="list"
+        view_mode="form" target="new"
+    />
+
+    <!-- Cash Incentive Print Action Window -->
+    <record id="print_action" model="ir.actions.act_window">
+        <field name="name">Cash Incentive Print Action</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">cash.incentive.print.wizards</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_cash_incentive_print_wizards_print_wizard_form"/>
+        <field name="target">new</field>
+    </record>
+</odoo>

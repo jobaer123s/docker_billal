@@ -1,0 +1,51 @@
+version: '3.1'
+services:
+  web:
+    platform: linux/x86_64
+    build:
+      context: .
+      dockerfile: Dockerfile13
+    depends_on:
+      - mydb
+    ports:
+      - "8013:8069"
+    volumes:
+      - odoo-web-data:/var/lib/odoo
+      - ./config:/etc/odoo
+      #- ./customs:/mnt/extra-addons
+      - /odoo/custom/common-custom-c13-addons:/mnt/common-custom-c13-addons
+      - /odoo/custom/common-custom-c13-addons/custom_acc:/mnt/common-custom-c13-addons/custom_acc
+      - /odoo/custom/common-custom-c13-addons/custom_hrms:/mnt/common-custom-c13-addons/custom_hrms
+      - /odoo/custom/common-custom-c13-addons/inventory_report:/mnt/common-custom-c13-addons/inventory_report
+      - /odoo/custom/circle-bd-c13-addons:/mnt/circle-bd-c13-addons
+      - /odoo/custom/fortress-c13-addons:/mnt/fortress-c13-addons
+      - /odoo/custom/nice-c13-addons:/mnt/nice-c13-addons
+      #---- add more individual git addons here
+    environment:
+    - HOST=mydb
+    - USER=odoo
+    - PASSWORD=odoo123
+    command: >
+      odoo -c /etc/odoo/odoo.conf 
+    # -d circle_bd -u custom_common_settings
+  mydb:
+    platform: linux/x86_64
+    image: postgres:12
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_PASSWORD=odoo123
+      - POSTGRES_USER=odoo
+    volumes:
+      - odoo-db-data:/var/lib/postgresql/data
+    
+  pgadmin:
+    platform: linux/x86_64
+    image: dpage/pgadmin4
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@mail.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    ports:
+      - "5050:80"
+volumes:
+  odoo-web-data:
+  odoo-db-data:

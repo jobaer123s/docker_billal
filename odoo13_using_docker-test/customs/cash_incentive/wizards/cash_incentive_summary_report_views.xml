@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_cash_incentive_excel_print_wizards_print_wizard_form" model="ir.ui.view">
+        <field name='name'>cash.incentive.excel.print.wizards.form</field>
+        <field name='model'>cash.incentive.excel.print.wizards</field>
+        <field name='arch' type='xml'>
+            <form string='Cash Incentive Summary Report'>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="type" widget="radio"/>
+                        </group>
+                         <group>
+                             <field name="bank_id" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}"  invisible="type == '01'" required="type == '02'"/>
+                             <field name="start_date"/>
+                             <field name="end_date" required="start_date != False"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <button context="{'with_head':True}" name="incentive_report_excel" class="oe_highlight fa fa-download" string=" Download" type="object"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="incentive_excel_report_wizard_action" model="ir.actions.act_window">
+            <field name="name">Cash Incentive Summary Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">cash.incentive.excel.print.wizards</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_cash_incentive_excel_print_wizards_print_wizard_form"/>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem id="menu_incentive_summary_report" name="Cash Incentive Summary Report" sequence="5"
+                  action="incentive_excel_report_wizard_action" parent="menu_incentive_report_head"/>
+</odoo>

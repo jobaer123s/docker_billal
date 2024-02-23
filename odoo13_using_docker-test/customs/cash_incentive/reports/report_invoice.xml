@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+	<data>
+<!--        <report id="foreign_invoice_report_id"-->
+<!--				string="Print Invoice"-->
+<!--				model="account.move"-->
+<!--				report_type="qweb-pdf"-->
+<!--                menu="False"-->
+<!--				file="cash_incentive.foreign_invoice_report_view"-->
+<!--				name="cash_incentive.foreign_invoice_report_view"/>-->
+<!--        -->
+        <record id="foreign_invoice_report_id" model="ir.actions.report">
+            <field name="name">Print Invoice</field>
+            <field name="model">account.move</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">cash_incentive.foreign_invoice_report_view</field>
+            <field name="report_file">cash_incentive.foreign_invoice_report_view</field>
+            <field name="print_report_name">Print_Invoice</field>
+<!--            <field name="attachment"/>-->
+        </record>
+
+		<template id="foreign_invoice_report_view">
+            <t t-call="web.html_container">
+<!--                <t t-foreach="docs" t-as="o">-->
+                <t t-foreach="request.env['account.move'].search([('id', '=', id)])" t-as="o">
+                <t t-call="web.external_layout">
+                    <div class="page">
+                        <style type="text/css">
+                            th, tr, td{
+                                background: white !important;
+                            }
+                        </style>
+                        <div class="oe_structure"/>
+                    <div style="margin-top:30px" class="container-fluid">
+                        <div class="row" style="">
+                            <div class="col-3 first_part" name="first_part">
+                                 <div>
+                                    <strong>Billed To</strong>
+                                     <br/>
+                                    <span t-field="o.partner_id.name"/>
+                                     <br/>
+                                    <span t-field="o.partner_id.street"/>
+                                     <br/>
+                                    <span t-field="o.partner_id.street2"/>
+                                     <br/>
+                                    <span t-field="o.partner_id.country_id.name"/>
+                                </div>
+                            </div>
+                            <div class="col-3 second_part" name="second_part">
+                                 <div>
+                                    <strong>Date of Issue</strong>
+                                     <br/>
+                                    <span t-field="o.date"/>
+                                </div>
+                                <div class="partner_mobile">
+                                    <strong>Due Date</strong>
+                                    <br/>
+                                    <span t-field="o.date"/>
+                                </div>
+                            </div>
+                            <div class="col-3 third_part" name="third_part">
+                                 <div>
+                                    <strong>Invoice Number</strong>
+                                     <br/>
+                                    <span t-field="o.ref"/>
+                                </div>
+                                 <div t-if="contract_name">
+                                    <strong>Reference</strong>
+                                     <br/>
+                                    <span t-esc="contract_name"/>
+                                </div>
+                            </div>
+                            <div class="col-3 fourth_part" name="fourth_part">
+                                 <div>
+                                    <strong>Total Amount (<span t-field="o.foreign_currency_type.name"/>)</strong>
+                                     <br/>
+                                     <h3>
+                                         <span t-field="o.currency_symbol"/>
+                                         <strong> <t t-esc="'{0:,.2f}'.format(o.invoice_total_fc)"/></strong>
+                                     </h3>
+
+                                </div>
+                            </div>
+                        </div>
+                         <div class="row" style="">
+                                <div class="col-3 fifth_part" name="fifth_part">
+                                     <div t-if="o.mashuk_challan_no" class="mashuk_challan_no">
+                                        <strong>Mushak Challan No.:</strong>
+                                        <br/>
+                                        <span t-field="o.mashuk_challan_no"/>
+                                    </div>
+                                </div>
+                                <div class="col-3 sixth_part" name="sixth_part">
+                                     <div t-if="o.mashuk_challan_date" class="mashuk_challan_date">
+                                        <strong>Mushak Challan Date:</strong>
+                                        <br/>
+                                        <span t-field="o.mashuk_challan_date"/>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                    <br/>
+                    <table style="border-collapse: collapse;width: 100%; border:0; border-top: 2px solid;margin-top: 30px;" class="table table-condensed">
+                        <thead style="border:0">
+                            <tr>
+                                <th style="border:0" class="text-left font_color">Description</th>
+                                <th style="border:0" class="text-right  font_color">Rate</th>
+                                <th style="border:0" class="text-right font_color">Qty</th>
+                                <th style="border:0" class="text-right font_color">Line Total</th>
+                            </tr>
+                        </thead>
+                        <tbody class="consumed_tbody">
+                            <t t-set="total" t-value="0.0"/>
+                            <t t-set="total1" t-value="0.0"/>
+                            <t t-foreach="o.invoice_line_ids" t-as="line">
+                            <tr style="border-bottom: 1px solid #ccc">
+                                <td style="border:0">
+                                    <span t-field="line.product_id.name" />
+                                    <br/>
+                                    <span t-field="line.name" />
+                                </td>
+                                <td style="border:0; text-align:right">
+                                    <span t-field="line.usd_price" />
+                                </td>
+                                <td style="border:0; text-align:right">
+                                    <span t-field="line.quantity" />
+                                </td>
+                                <td style="border:0; text-align:right">
+                                    <span t-field="line.qty_usd_price" />
+                                    <t t-set="total" t-value="total + line.qty_usd_price"/>
+                                </td>
+                            </tr>
+                            <t t-set="total" t-value="total + line.debit"/>
+                            <t t-set="total1" t-value="total1 + line.credit"/>
+                            </t>
+                        </tbody>
+                    </table>
+                    <div style="border:0" id="total" class="row justify-content-end">
+                    <div style="border:0" class="col-4">
+                        <table style="border:0" class="table table-sm">
+                            <tr style="border:0">
+                                <td style="border:0" ><strong style="color:#000">Subtotal</strong></td>
+                                <td style="border:0" class="text-right">
+                                    <span t-field="o.invoice_total_actual_amt"/>
+                                </td>
+                            </tr>
+<!--                            <tr style="border-bottom:1px solid #ccc">-->
+<!--                                <td style="border:0" name="td_taxes_label"><strong style="color:#000">Tax</strong></td>-->
+<!--                                <td style="border:0" class="text-right">-->
+<!--                                     0-->
+<!--                                </td>-->
+<!--                            </tr>-->
+                            <tr style="border-bottom:1px solid #ccc">
+                                <td style="border:0" name="td_taxes_label"><strong style="color:#000">Discount</strong></td>
+                                <td style="border:0" class="text-right">
+                                    <span t-set="discount" t-field="o.fixed_discount"/>
+                                    <t t-set="total" t-value="total - o.fixed_discount"/>
+                                </td>
+                            </tr>
+                            <tr style="border:0">
+                                <td style="border:0"><strong style="color:#000">Net Total</strong></td>
+                                <td style="border:0" class="text-right">
+                                    <span t-field="o.invoice_total_fc"/>
+                                </td>
+                            </tr>
+                            <tr style="border-bottom:1px solid #ccc">
+                                <td style="border:0"><strong style="color:#000">Amount Paid</strong></td>
+                                <td style="border:0" class="text-right">
+                                    <span style="color:#000" t-field="o.invoice_payment_amount_fc"/>
+                                    <t t-set="total3" t-value="o.invoice_payment_amount_fc"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border:0"><strong style="color:#000">Amount Due (<span t-field="o.foreign_currency_type.name"/>)</strong></td>
+                                <td style="border:0" class="text-right">
+                                    <span style="color:#000" t-field="o.currency_symbol"/>
+                                    <t t-set="total2" t-value="total - total3"/>
+<!--                                    <span style="color:#000" t-esc="total2"/>-->
+                                    <t t-set="total4" style="color:#000" t-value="'{:,.2f}'.format(o.invoice_remaining_amount_fc)"/>
+                                    <t t-if="o.invoice_remaining_amount_fc > 0">
+                                        <span style="color:#000" t-esc="total4"/>
+                                    </t>
+                                    <t t-else="">
+                                        <span style="color:#000">
+                                            0.0
+                                        </span>
+                                    </t>
+
+                                </td>
+                            </tr>
+
+<!--                            <tr style="border:0">-->
+<!--                                <td style="border:0"><strong>Amount Due (<span t-field="o.foreign_currency_type.name"/>)</strong></td>-->
+<!--                                <td style="border:0" class="text-right">-->
+<!--&lt;!&ndash;                                    <span t-field="o.currency_symbol"/>&ndash;&gt;-->
+<!--                                    <span t-field="o.amount_total"/>-->
+<!--&lt;!&ndash;                                    <span t-field="o.amount_residual" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>&ndash;&gt;-->
+<!--                                </td>-->
+<!--                            </tr>-->
+                        </table>
+                    </div>
+                </div>
+
+                    <br/><br/>
+                    <t t-if="o.terms_condition_id">
+                        <div>
+                            <h5 style="color:#00afaf">Terms &amp; Condition</h5>
+                            <span t-field="o.terms_condtion_details"/>
+                        </div>
+                    </t>
+<!--                    <div class="row">-->
+<!--                        <div class="col-12">-->
+<!--                            <p style="font-size: 18px;"><strong>(Amount in Words: <span t-field="o.amount_in_words"/>)</strong></p>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <t t-if = "o.narration">-->
+<!--                        <strong><h4 >Remarks</h4></strong>-->
+<!--                        <div  class="row" style="border: 1px solid black; padding:10px 0 10px 5px;  width:100%; margin: 0 auto !important;" >-->
+<!--                            <span t-field="o.narration"/>-->
+<!--                        </div>-->
+<!--                    </t>-->
+
+<!--                    <div class="row" style="margin: em auto 0 auto !important;">-->
+<!--                        <div class="col-3 text-center">-->
+<!--                            <div>-->
+<!--                                <p style="padding-top: 120px;text-align:center;text-decoration: overline; margin-bottom:0 !important;"><strong>Prepared by</strong></p>-->
+<!--                            </div>-->
+<!--                            <div>-->
+<!--                                (<span t-field="o.create_uid"/>)-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="col-3 text-center">-->
+<!--                            <div>-->
+<!--                                <p style="padding-top: 120px;text-align:center;text-decoration: overline;"><strong>Checked by (Auditor)</strong></p>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="col-3 text-center">-->
+<!--                            <div>-->
+<!--                                <p style="padding-top: 120px;text-align:center;text-decoration:overline;margin-bottom:0 !important;"><strong>CFO/ED</strong></p>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="col-3 text-center">-->
+<!--                            <div>-->
+<!--                                <p style="padding-top: 120px;text-align:center;text-decoration: overline;"><strong>Board of Director</strong></p>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+
+<!--                    <div class="row" style="margin: 8em auto 0 auto !important;">-->
+<!--                        <div class="col-3 text-center">-->
+<!--                            <strong style="padding-top: 1400px;text-align:center;text-decoration: overline;">Received by</strong>-->
+<!--                        </div>-->
+<!--                    </div>-->
+                </div>
+<!--                <div class="row" style="margin: 7.5em auto 0 auto !important;">-->
+<!--                    <div class="col-12">-->
+<!--                        <strong>[Created on: <span t-field="o.create_date"/> | Updated by: <span t-field="o.create_uid"/> on <span t-field="o.write_date"/>]</strong>-->
+<!--                    </div>-->
+<!--                </div>-->
+                </t>
+                </t>
+            </t>
+		</template>
+
+<!--		<template id="journal_entry_report_template_id">-->
+<!--			<t t-call="web.html_container">-->
+<!--				<t t-foreach="docs" t-as="o">-->
+<!--					<t t-call="custom_account_day_book.journal_entry_template_report_view"  t-lang="o.partner_id.lang"/>-->
+<!--				</t>-->
+<!--			</t>-->
+<!--		</template>-->
+
+<!--        <template id="journal_entry_template_report_view_inherit" inherit_id="custom_account_day_book.journal_entry_template_report_view">-->
+<!--            <xpath expr="//div[@class='tab_one']" position="before">-->
+<!--                <div id="informations1" class="row" style="margin-top: 5px; margin-bottom: 5px;">-->
+<!--                    <div t-if="o.name" class="col-auto mw-100 mb-3">-->
+<!--                        <strong>Name:</strong>-->
+<!--                        <p t-field="o.name" class="m-0"/>-->
+<!--                    </div>-->
+<!--                    <div t-if="o.date" class="col-auto mw-100 mb-3">-->
+<!--                        <strong>Date:</strong>-->
+<!--                        <p t-field="o.date" class="m-0"/>-->
+<!--                    </div>-->
+<!--                     <div t-if="o.reference_number" class="col-auto mw-100 mb-3">-->
+<!--                        <strong>Reference Number:</strong>-->
+<!--                        <p t-field="o.reference_number" class="m-0"/>-->
+<!--                    </div>-->
+<!--                     <div t-if="o.mashuk_challan_no" class="col-auto mw-100 mb-3">-->
+<!--                        <strong>Mushak Challan No.:</strong>-->
+<!--                        <p t-field="o.mashuk_challan_no" class="m-0"/>-->
+<!--                    </div>-->
+<!--                     <div t-if="o.mashuk_challan_date" class="col-auto mw-100 mb-3">-->
+<!--                        <strong>Mushak Challan Date:</strong>-->
+<!--                        <p t-field="o.mashuk_challan_date" class="m-0"/>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </xpath>-->
+
+<!--            <xpath expr="//div[@class='row_one']" position="replace"/>-->
+
+<!--            <xpath expr="//th[@class='maturity_one']" position="replace"/>-->
+<!--            <xpath expr="//td[@class='maturity_two']" position="replace"/>-->
+
+<!--            <xpath expr="//div[@class='row_two']" position="replace">-->
+
+<!--                <div class="row" style="margin: em auto 0 auto !important;">-->
+<!--                    <div class="col-3 text-center">-->
+<!--                        <div>-->
+<!--                            <p style="padding-top: 75px;text-align:center;text-decoration: overline; margin-bottom:0 !important;"><strong>Prepared by</strong></p>-->
+<!--                        </div>-->
+<!--                        <div>-->
+<!--                            (<span t-field="o.create_uid"/>)-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="col-3 text-center">-->
+<!--                        <div>-->
+<!--                            <p style="padding-top: 75px;text-align:center;text-decoration: overline;"><strong>Received by</strong></p>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="col-3 text-center">-->
+<!--                        <div>-->
+<!--                            <p style="padding-top: 75px;text-align:center;text-decoration:overline;margin-bottom:0 !important;"><strong>Checked by</strong></p>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="col-3 text-center">-->
+<!--                        <div>-->
+<!--                            <p style="padding-top: 75px;text-align:center;text-decoration: overline;"><strong>Approved by</strong></p>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </xpath>-->
+<!--        </template>-->
+<!--        <template id="journal_entry_template_report_view_inherit_two" inherit_id="custom_account_day_book.voucher_report_tmpl_view">-->
+<!--            <xpath expr="//div[@class='tab_one']" position="before">-->
+<!--                <div id="informations1" class="row" style="margin-top: 5px; margin-bottom: 5px;">-->
+<!--                    <div t-if="o.name" class="col-auto mw-100 mb-3">-->
+<!--                        <strong>Name:</strong>-->
+<!--                        <p t-field="o.name" class="m-0"/>-->
+<!--                    </div>-->
+<!--                    <div t-if="o.date" class="col-auto mw-100 mb-3">-->
+<!--                        <strong>Date:</strong>-->
+<!--                        <p t-field="o.date" class="m-0"/>-->
+<!--                    </div>-->
+<!--                     <div t-if="o.reference_number" class="col-auto mw-100 mb-3">-->
+<!--                        <strong>Reference Number:</strong>-->
+<!--                        <p t-field="o.reference_number" class="m-0"/>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </xpath>-->
+
+<!--            <xpath expr="//div[@class='tab_two']" position="replace"/>-->
+<!--            <xpath expr="//th[@class='maturity_one']" position="replace"/>-->
+<!--            <xpath expr="//td[@class='maturity_two']" position="replace"/>-->
+
+<!--            <xpath expr="//span[@class='tab_one']" position="replace">-->
+<!--                <div class="row" style="margin: em auto 0 auto !important;">-->
+<!--                    <div class="col-3 text-center">-->
+<!--                        <div>-->
+<!--                            <p style="padding-top: 120px;text-align:center;text-decoration: overline; margin-bottom:0 !important;"><strong>Prepared by</strong></p>-->
+<!--                        </div>-->
+<!--                        <div>-->
+<!--                            (<span t-field="o.create_uid"/>)-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="col-3 text-center">-->
+<!--                        <div>-->
+<!--                            <p style="padding-top: 120px;text-align:center;text-decoration: overline;"><strong>Received by</strong></p>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="col-3 text-center">-->
+<!--                        <div>-->
+<!--                            <p style="padding-top: 120px;text-align:center;text-decoration:overline;margin-bottom:0 !important;"><strong>Checked by</strong></p>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                    <div class="col-3 text-center">-->
+<!--                        <div>-->
+<!--                            <p style="padding-top: 120px;text-align:center;text-decoration: overline;"><strong>Approved by</strong></p>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </xpath>-->
+<!--        </template>-->
+
+        <template id="report_invoice_document_inherit_cash_incentive" inherit_id="account.report_invoice_document">
+             <xpath expr="//div[@name='reference']" position="after">
+                <t t-if="o.move_type in ('out_invoice', 'out_refund')">
+                    <div class="col-auto mw-100 mb-2" t-if="o.mashuk_challan_no" name="mashuk_challan_no">
+                        <strong>Mushak Challan No.:</strong>
+                        <p class="m-0" t-field="o.mashuk_challan_no"/>
+                    </div>
+                </t>
+                <t t-if="o.move_type in ('out_invoice', 'out_refund')">
+                    <div class="col-auto mw-100 mb-2" t-if="o.mashuk_challan_date" name="mashuk_challan_date">
+                        <strong>Mushak Challan Date:</strong>
+                        <p class="m-0" t-field="o.mashuk_challan_date"/>
+                    </div>
+                </t>
+             </xpath>
+        </template>
+
+	</data>
+</odoo>

@@ -1,0 +1,57 @@
+<odoo>
+
+     <record model="ir.module.category" id="root_menu_access_group_category">
+        <field name="name">Cash Incentive Access</field>
+        <field name="description">Cash Incentive Access Category</field>
+        <field name="sequence">110</field>
+    </record>
+
+    <record model="res.groups" id="group_purchase_controller">
+        <field name="name">Purchase Controller</field>
+    </record>
+
+    <record model="res.groups" id="group_sale_controller">
+        <field name="name">Sale Controller</field>
+    </record>
+
+    <record id="group_cash_incentive_root_menu" model="res.groups">
+        <field name="name">Cash Incentive</field>
+        <field name="category_id" ref="root_menu_access_group_category"/>
+    </record>
+
+    <!--    &lt;!&ndash; View salesman target based on own user &ndash;&gt;
+        <record id="salesman_target_view_rule_user" model="ir.rule">
+            <field name="name">Salesman Target Tree View Rule User</field>
+            <field name="model_id" ref="model_salesman_target"/>
+            <field name="domain_force">[('user_id.id','=',user.id)]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="False"/>
+            <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman')), (4, ref('sales_team.group_sale_salesman_all_leads'))]"/>
+        </record>
+
+        &lt;!&ndash; View all salesman target by manager &ndash;&gt;
+        <record id="salesman_target_view_rule_manager" model="ir.rule">
+            <field name="name">Salesman Target Tree View Rule Manager</field>
+            <field name="model_id" ref="model_salesman_target"/>
+            <field name="domain_force">[]</field>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="True"/>
+            <field name="perm_unlink" eval="True"/>
+            <field name="groups" eval="[(4, ref('sales_team.group_sale_manager'))]"/>
+        </record>-->
+
+    <!-- View salesman target based on own user -->
+    <!--    <record id="sale_order_tree_view_rule_user" model="ir.rule">-->
+    <!--        <field name="name">Sale Order Tree View Rule User</field>-->
+    <!--        <field name="model_id" ref="sale.model_sale_order"/>-->
+    <!--        <field name="groups" eval="[(4, ref('sales_team.group_sale_salesman'))]"/>-->
+    <!--        <field name="domain_force">[('user_id.work_location_id.id','=',user.work_location_id.id)]</field>-->
+    <!--        <field name="perm_read" eval="True"/>-->
+    <!--        <field name="perm_write" eval="True"/>-->
+    <!--        <field name="perm_create" eval="True"/>-->
+    <!--        <field name="perm_unlink" eval="False"/>-->
+    <!--    </record>-->
+</odoo>

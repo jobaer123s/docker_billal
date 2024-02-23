@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <data>
+        <record id="view_support_tools_incentive_form" model="ir.ui.view">
+            <field name="name">support.tools.incentive.wizard.form</field>
+            <field name="model">support.tools.incentive.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Tools Incentive">
+                    <group >
+                        <field name="type" required="1"/>
+                        <field name="swift_no" invisible="type not in ('1','2')"/>
+                        <field name="file_no" invisible="type != '3'"/>
+                        <field name="invoice_no" invisible="type != '4'"/>
+                    </group>
+                    <footer>
+                        <button name="action_update" confirm="Are you sure you want to Update?" string="Update" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_support_tools_incentive_action" model="ir.actions.act_window">
+            <field name="name">Support Tools (Cash Incentive)</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">support.tools.incentive.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_support_tools_incentive_form"/>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem id="menu_support_tools_incentive" name="Support Tools" sequence="3"
+                  action="view_support_tools_incentive_action" parent="menu_configuration_head" groups="base.group_system"/>
+
+    </data>
+</odoo>

@@ -1,0 +1,1095 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <!--for all with head ====================================================== -->
+        <record id="paperformat_prc_letter_wo_head_report" model="report.paperformat">
+			<field name="name">Report Format</field>
+            <field name="format">custom</field>
+            <field name="page_width">258</field>
+            <field name="page_height">383</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">40</field>
+            <field name="margin_bottom">7</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_spacing">35</field>
+            <field name="dpi">90</field>
+
+            <!--<field name="page_width">210</field>
+            <field name="page_height">297</field>
+            <field name="margin_top">55</field>
+            <field name="margin_bottom">25</field>
+            <field name="header_spacing">53</field>-->
+
+		</record>
+
+<!--         <report id="report_incentive_letter_w_head" model="swift.message"-->
+<!--				string="Form-C Report"-->
+<!--				report_type="qweb-pdf"-->
+<!--				file="cash_incentive.incentive_prc_letter_wo_report_qweb"-->
+<!--				name="cash_incentive.incentive_prc_letter_wo_report_qweb"-->
+<!--                 paperformat="cash_incentive.paperformat_prc_letter_wo_head_report"-->
+<!--                 menu="False"-->
+<!--                print_report_name="rpt_name"/>-->
+
+        <record id="report_incentive_letter_w_head" model="ir.actions.report">
+            <field name="name">Form-C Report</field>
+            <field name="model">swift.message</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">cash_incentive.incentive_prc_letter_wo_report_qweb</field>
+            <field name="report_file">cash_incentive.incentive_prc_letter_wo_report_qweb</field>
+            <field name="print_report_name">rpt_name</field>
+
+        </record>
+
+        <template id="incentive_prc_letter_wo_report_qweb">
+			<t t-call="web.html_container">
+
+				<link rel='stylesheet' href="/cash_incentive/static/src/css/custom_report.css" />
+<!--				<t t-if="o and 'company_id' in o">-->
+<!--					<t t-set="company" t-value="o.company_id"></t>-->
+<!--				</t>-->
+<!--				<t t-if="not o or not 'company_id' in o">-->
+<!--					<t t-set="company" t-value="res_company"></t>-->
+<!--				</t>-->
+<!--				<t t-call="cash_incentive.report_employee_letter_w_head_layout_header" />-->
+
+
+                <t t-if="with_head">
+<!--				    <t t-call="web.internal_layout">-->
+<!--                        <div class="page" style="margin-top:0px;">-->
+<!--                        <tr t-foreach="data" t-as="doc">-->
+<!--                            <span t-raw="doc['details']" />-->
+<!--                        </tr>-->
+<!--                    </div>-->
+<!--                    </t>-->
+
+                    <t t-call="web.internal_layout">
+                        <div class="page" style="margin-top:0px;">
+                            <t t-foreach="request.env['swift.message'].search([('id', '=', swift_id)], limit=1)" t-as="o">
+                                <t t-if="rpt_name == 'FORM_C'">
+                                    <span t-raw="o.form_c_description" />
+                                </t>
+                                <t t-if="rpt_name == 'fl'">
+                                    <span t-raw="o.encashment_forwarding_letter" />
+                                </t>
+                            </t>
+                        </div>
+                    </t>
+
+                </t>
+
+                <t t-else="">
+                    <t t-call="cash_incentive.report_cash_wo_head_layout_header" />
+                    <t t-call="web.internal_layout">
+                        <div class="page" style="margin-top:0px;">
+                             <t t-foreach="request.env['swift.message'].search([('id', '=', swift_id)], limit=1)" t-as="o">
+                                <t t-if="rpt_name == 'FORM_C'">
+                                    <span t-raw="o.form_c_description" />
+                                </t>
+                                 <t t-if="rpt_name == 'fl'">
+                                    <span t-raw="o.encashment_forwarding_letter" />
+                                </t>
+                            </t>
+<!--                            <tr t-foreach="data" t-as="doc">-->
+<!--                                <span t-raw="doc['details']" />-->
+<!--                            </tr>-->
+                        </div>
+                    </t>
+                </t>
+
+<!--                <t t-call="custom_hr_employee_letters.report_employee_letter_w_head_layout_footer" />-->
+            </t>
+        </template>
+
+        <!--for all without head ====================================================== -->
+        <record id="paperformat_prc_letter_without_head_report" model="report.paperformat">
+			<field name="name">Report Format</field>
+            <field name="format">custom</field>
+            <field name="page_width">258</field>
+            <field name="page_height">383</field>
+            <field name="orientation">Portrait</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">10</field>
+            <field name="margin_bottom">7</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_spacing">35</field>
+            <field name="dpi">90</field>
+		</record>
+
+<!--         <report id="report_incentive_letter_wo_head" model="cash.incentive.head"-->
+<!--				string="Report"-->
+<!--				report_type="qweb-pdf"-->
+<!--				file="cash_incentive.incentive_prc_letter_without_report_qweb"-->
+<!--				name="cash_incentive.incentive_prc_letter_without_report_qweb"-->
+<!--                 paperformat="cash_incentive.paperformat_prc_letter_without_head_report"-->
+<!--                print_report_name="rpt_name"/>-->
+
+         <record id="report_incentive_letter_wo_head" model="ir.actions.report">
+            <field name="name">Form-C Report</field>
+            <field name="model">cash.incentive.head</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">cash_incentive.incentive_prc_letter_without_report_qweb</field>
+            <field name="report_file">cash_incentive.incentive_prc_letter_without_report_qweb</field>
+            <field name="print_report_name">rpt_name</field>
+        </record>
+
+        <template id="incentive_prc_letter_without_report_qweb">
+			<t t-call="web.html_container">
+
+				<link rel='stylesheet' href="/cash_incentive/static/src/css/custom_report.css" />
+<!--				<t t-if="o and 'company_id' in o">-->
+<!--					<t t-set="company" t-value="o.company_id"></t>-->
+<!--				</t>-->
+<!--				<t t-if="not o or not 'company_id' in o">-->
+<!--					<t t-set="company" t-value="res_company"></t>-->
+<!--				</t>-->
+<!--				<t t-call="cash_incentive.report_employee_letter_w_head_layout_header" />-->
+
+
+                <t t-if="with_head">
+				    <t t-call="web.internal_layout">
+                        <div class="page" style="margin-top:0px;">
+                        <tr t-foreach="data" t-as="doc">
+                            <span t-raw="doc['details']" />
+                        </tr>
+                    </div>
+                    </t>
+                </t>
+
+                <t t-else="">
+                    <t t-call="cash_incentive.report_cash_wo_head_layout_header" />
+                    <t t-call="web.internal_layout">
+                        <div class="page" style="margin-top:0px;">
+                            <tr t-foreach="data" t-as="doc">
+                                <span t-raw="doc['details']" />
+                            </tr>
+                        </div>
+                    </t>
+                </t>
+
+<!--                <t t-call="custom_hr_employee_letters.report_employee_letter_w_head_layout_footer" />-->
+            </t>
+        </template>
+
+        <template id="cash_incentive.report_employee_letter_w_head_layout_footer">
+			<div class="footer">
+
+				<div class="row" style="border-top:solid 1px #000;">
+					<div class="col-4">
+						<span
+							t-esc="context_timestamp(datetime.datetime.now()).strftime('%a, %d %b %Y %H:%M:%S')" />
+					</div>
+					<div class="col-4">
+						Printed By:
+						<span t-esc="user.name"></span>
+					</div>
+					<div t-if="report_type == 'pdf'" class="col-4 text-right">
+                    Page:
+                    <span class="page"/>
+                    of
+                    <span class="topage"/>
+                </div>
+				</div>
+			</div>
+		</template>
+
+        <!--for form ka without ====================================================== -->
+        <record id="paperformat_prc_letter_wo_head_report_form_ka" model="report.paperformat">
+			<field name="name">Report Format</field>
+            <field name="format">custom</field>
+            <field name="page_width">258</field>
+            <field name="page_height">383</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">20</field>
+            <field name="margin_bottom">7</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_spacing">35</field>
+            <field name="dpi">90</field>
+		</record>
+
+         <!-- for form ka without-->
+<!--         <report id="report_incentive_letter_wo_head_form_ka" model="incentive.letter.w.letter.head.rpt"-->
+<!--				string="Report"-->
+<!--				report_type="qweb-pdf"-->
+<!--				file="cash_incentive.incentive_prc_letter_wo_form_ka_qweb"-->
+<!--				name="cash_incentive.incentive_prc_letter_wo_form_ka_qweb"-->
+<!--                 paperformat="cash_incentive.paperformat_prc_letter_wo_head_report_form_ka"-->
+<!--                print_report_name="rpt_name"/>-->
+
+
+        <record id="report_incentive_letter_wo_head_form_ka" model="ir.actions.report">
+            <field name="name">Report</field>
+            <field name="model">cash.incentive.head</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">cash_incentive.incentive_prc_letter_wo_form_ka_qweb</field>
+            <field name="report_file">cash_incentive.incentive_prc_letter_wo_form_ka_qweb</field>
+            <field name="print_report_name">rpt_name</field>
+
+        </record>
+
+
+
+        <!-- for form ka without-->
+        <template id="incentive_prc_letter_wo_form_ka_qweb">
+			<t t-call="web.html_container">
+				<link rel='stylesheet' href="/cash_incentive/static/src/css/custom_report.css" />
+                <t t-if="with_head">
+				    <t t-call="web.internal_layout">
+                        <div class="page" style="margin-top:0px;">
+                        <tr t-foreach="data" t-as="doc">
+                            <t t-call="cash_incentive.report_cash_letter_w_head_layout_header" />
+                            <span t-raw="doc['details']" />
+                        </tr>
+                    </div>
+                    </t>
+                </t>
+                <t t-else="">
+                    <t t-call="cash_incentive.report_cash_wo_head_layout_header" />
+                    <t t-call="web.internal_layout">
+                        <div class="page" style="margin-top:0px;">
+                            <tr t-foreach="data" t-as="doc">
+                                <span t-raw="doc['details']" />
+                                <span t-esc="company_id" />
+                            </tr>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+        <!--for form ka with ====================================================== -->
+        <record id="paperformat_prc_letter_w_head_report_form_ka" model="report.paperformat">
+			<field name="name">Report Format</field>
+            <field name="format">custom</field>
+            <field name="page_width">258</field>
+            <field name="page_height">383</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">40</field>
+            <field name="margin_bottom">7</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_spacing">35</field>
+            <field name="dpi">90</field>
+		</record>
+
+         <!-- for form ka with-->
+<!--         <report id="report_incentive_letter_w_head_form_ka" model="incentive.letter.w.letter.head.rpt"-->
+<!--				string="Report"-->
+<!--				report_type="qweb-pdf"-->
+<!--				file="cash_incentive.incentive_prc_letter_w_form_ka_qweb"-->
+<!--				name="cash_incentive.incentive_prc_letter_w_form_ka_qweb"-->
+<!--                 paperformat="cash_incentive.paperformat_prc_letter_w_head_report_form_ka"-->
+<!--                print_report_name="rpt_name"/>-->
+
+        <record id="report_incentive_letter_w_head_form_ka" model="ir.actions.report">
+            <field name="name">Report</field>
+            <field name="model">cash.incentive.head</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">cash_incentive.incentive_prc_letter_w_form_ka_qweb</field>
+            <field name="report_file">cash_incentive.incentive_prc_letter_w_form_ka_qweb</field>
+            <field name="print_report_name">rpt_name</field>
+
+        </record>
+
+        <!-- for form ka with-->
+        <template id="incentive_prc_letter_w_form_ka_qweb">
+			<t t-call="web.html_container">
+				<link rel='stylesheet' href="/cash_incentive/static/src/css/custom_report.css" />
+                <t t-if="with_head">
+				    <t t-call="web.internal_layout">
+                        <div class="page" style="margin-top:0px;">
+                        <tr t-foreach="data" t-as="doc">
+                            <span t-raw="doc['details']" />
+                        </tr>
+                    </div>
+                    </t>
+                </t>
+                <t t-else="">
+                    <t t-call="cash_incentive.report_cash_wo_head_layout_header" />
+                    <t t-call="web.internal_layout">
+                        <div class="page" style="margin-top:0px;">
+                            <tr t-foreach="data" t-as="doc">
+                                <span t-raw="doc['details']" />
+                                <span t-esc="company_id" />
+                            </tr>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+
+<!-- ================= start of without head ======================================================================= -->
+<!--        for form ka-->
+        <record id="paperformat_prc_letter_wo_head_report_f_ka" model="report.paperformat">
+			<field name="name">Report Format</field>
+            <field name="format">custom</field>
+            <field name="orientation">Portrait</field>
+            <field name="page_width">258</field>
+            <field name="page_height">383</field>
+            <field name="margin_top">15</field>
+            <field name="margin_bottom">7</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_spacing">35</field>
+            <field name="dpi">90</field>
+		</record>
+<!--        for form kha-->
+        <record id="paperformat_prc_letter_wo_head_report_f_kha" model="report.paperformat">
+			<field name="name">Report Format</field>
+            <field name="format">custom</field>
+            <field name="orientation">Portrait</field>
+            <field name="page_width">258</field>
+            <field name="page_height">383</field>
+            <field name="margin_top">30</field>
+            <field name="margin_bottom">7</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_spacing">35</field>
+            <field name="dpi">90</field>
+		</record>
+<!--        for ga report-->
+        <record id="paperformat_prc_letter_wo_head_report_ga" model="report.paperformat">
+            <field name="name">Ga Report Format</field>
+            <field name="format">A4</field>
+            <field name="page_height">0</field>
+			<field name="page_width">0</field>
+            <field name="orientation">Landscape</field>
+            <field name="margin_top">25</field>
+            <field name="margin_bottom">20</field>
+            <field name="margin_left">5</field>
+            <field name="margin_right">5</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">20</field>
+            <field name="dpi">90</field>
+		</record>
+<!--        for rest of the report-->
+        <record id="paperformat_prc_letter_wo_head_report_two" model="report.paperformat">
+			<field name="name">Report Format</field>
+            <field name="format">custom</field>
+            <field name="orientation">Portrait</field>
+            <field name="page_width">258</field>
+            <field name="page_height">383</field>
+            <field name="margin_top">20</field>
+            <field name="margin_bottom">7</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_spacing">35</field>
+            <field name="dpi">90</field>
+		</record>
+
+        <!-- PRC for without head-->
+<!--         <report id="report_incentive_letter_wo_head_PRC" model="cash.incentive.head"-->
+<!--				string="PRC Report"-->
+<!--				report_type="qweb-pdf"-->
+<!--				file="cash_incentive.prc_report"-->
+<!--				name="cash_incentive.prc_report"-->
+<!--                 menu="False"-->
+<!--                 paperformat="cash_incentive.paperformat_prc_letter_wo_head_report_two"/>-->
+
+        <record id="report_incentive_letter_wo_head_PRC" model="ir.actions.report">
+            <field name="name">PRC Report</field>
+            <field name="model">cash.incentive.head</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">cash_incentive.prc_report</field>
+            <field name="report_file">cash_incentive.prc_report</field>
+            <field name="paperformat_id" ref="cash_incentive.paperformat_prc_letter_wo_head_report_two"/>
+
+        </record>
+
+
+
+        <!-- ka for without head-->
+<!--         <report id="report_incentive_letter_wo_head_BASIS_KA" model="cash.incentive.head"-->
+<!--				string="Form Ka Report"-->
+<!--				report_type="qweb-pdf"-->
+<!--				file="cash_incentive.form_ka_report"-->
+<!--				name="cash_incentive.form_ka_report"-->
+<!--                 menu="False"-->
+<!--                 paperformat="cash_incentive.paperformat_prc_letter_wo_head_report_f_ka"/>-->
+
+        <record id="report_incentive_letter_wo_head_BASIS_KA" model="ir.actions.report">
+            <field name="name">Form Ka Report</field>
+            <field name="model">cash.incentive.head</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">cash_incentive.form_ka_report</field>
+            <field name="report_file">cash_incentive.form_ka_report</field>
+            <field name="paperformat_id" ref="cash_incentive.paperformat_prc_letter_wo_head_report_f_ka"/>
+
+        </record>
+
+        <!-- kha for without head-->
+<!--         <report id="report_incentive_letter_wo_head_BASIS_KHA" model="cash.incentive.head"-->
+<!--				string="Form Kha Report"-->
+<!--				report_type="qweb-pdf"-->
+<!--				file="cash_incentive.form_kha_report"-->
+<!--				name="cash_incentive.form_kha_report"-->
+<!--                 menu="False"-->
+<!--                 paperformat="cash_incentive.paperformat_prc_letter_wo_head_report_f_kha"/>-->
+
+        <record id="report_incentive_letter_wo_head_BASIS_KHA" model="ir.actions.report">
+            <field name="name">Form Kha Report</field>
+            <field name="model">cash.incentive.head</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">cash_incentive.form_kha_report</field>
+            <field name="report_file">cash_incentive.form_kha_report</field>
+            <field name="paperformat_id" ref="cash_incentive.paperformat_prc_letter_wo_head_report_f_kha"/>
+
+        </record>
+
+        <!-- FLBS for without head-->
+<!--         <report id="report_incentive_letter_wo_head_FLBS" model="cash.incentive.head"-->
+<!--				string="Form FLBS Report"-->
+<!--				report_type="qweb-pdf"-->
+<!--				file="cash_incentive.forwarding_letter_report"-->
+<!--				name="cash_incentive.forwarding_letter_report"-->
+<!--                 menu="False"-->
+<!--                 paperformat="cash_incentive.paperformat_prc_letter_wo_head_report_two"/>-->
+
+        <record id="report_incentive_letter_wo_head_FLBS" model="ir.actions.report">
+            <field name="name">Form FLBS Report</field>
+            <field name="model">cash.incentive.head</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">cash_incentive.forwarding_letter_report</field>
+            <field name="report_file">cash_incentive.forwarding_letter_report</field>
+            <field name="paperformat_id" ref="cash_incentive.paperformat_prc_letter_wo_head_report_two"/>
+
+        </record>
+
+        <!-- FLBK for without head-->
+<!--         <report id="report_incentive_letter_wo_head_FLBK" model="cash.incentive.head"-->
+<!--				string="Form FLBK Report"-->
+<!--				report_type="qweb-pdf"-->
+<!--				file="cash_incentive.forwarding_letter_for_bank_report"-->
+<!--				name="cash_incentive.forwarding_letter_for_bank_report"-->
+<!--                 menu="False"-->
+<!--                 paperformat="cash_incentive.paperformat_prc_letter_wo_head_report_two"/>-->
+
+        <record id="report_incentive_letter_wo_head_FLBK" model="ir.actions.report">
+            <field name="name">Form FLBK Report</field>
+            <field name="model">cash.incentive.head</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">cash_incentive.forwarding_letter_for_bank_report</field>
+            <field name="report_file">cash_incentive.forwarding_letter_for_bank_report</field>
+            <field name="paperformat_id" ref="cash_incentive.paperformat_prc_letter_wo_head_report_two"/>
+
+        </record>
+
+        <!-- FORM_C for without head-->
+<!--         <report id="report_incentive_letter_wo_head_FORM_C" model="cash.incentive.head"-->
+<!--				string="Form FORM_C Report"-->
+<!--				report_type="qweb-pdf"-->
+<!--				file="cash_incentive.form_c_report"-->
+<!--				name="cash_incentive.form_c_report"-->
+<!--                 menu="False"-->
+<!--                 paperformat="cash_incentive.paperformat_prc_letter_wo_head_report_two"/>-->
+
+        <record id="report_incentive_letter_wo_head_FORM_C" model="ir.actions.report">
+            <field name="name">Form FORM_C Report</field>
+            <field name="model">cash.incentive.head</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">cash_incentive.form_c_report</field>
+            <field name="report_file">cash_incentive.form_c_report</field>
+            <field name="paperformat_id" ref="cash_incentive.paperformat_prc_letter_wo_head_report_two"/>
+
+        </record>
+
+        <!-- FORM_GA for without head-->
+<!--         <report id="report_incentive_letter_wo_head_FORM_GA" model="cash.incentive.head"-->
+<!--				string="Form FORM_GA Report"-->
+<!--				report_type="qweb-pdf"-->
+<!--				file="cash_incentive.form_ga_report"-->
+<!--				name="cash_incentive.form_ga_report"-->
+<!--                 menu="False"-->
+<!--                 paperformat="cash_incentive.paperformat_prc_letter_wo_head_report_ga"/>-->
+
+
+        <record id="report_incentive_letter_wo_head_FORM_GA" model="ir.actions.report">
+            <field name="name">Form FORM_GA Report</field>
+            <field name="model">cash.incentive.head</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">cash_incentive.form_ga_report</field>
+            <field name="report_file">cash_incentive.form_ga_report</field>
+            <field name="paperformat_id" ref="cash_incentive.paperformat_prc_letter_wo_head_report_ga"/>
+
+        </record>
+
+        <!-- FORM_GHA for without head-->
+<!--         <report id="report_incentive_letter_wo_head_FORM_GHA" model="cash.incentive.head"-->
+<!--				string="Form FORM_GHA Report"-->
+<!--				report_type="qweb-pdf"-->
+<!--				file="cash_incentive.form_gha_report"-->
+<!--				name="cash_incentive.form_gha_report"-->
+<!--                 menu="False"-->
+<!--                 paperformat="cash_incentive.paperformat_prc_letter_wo_head_report_ga"/>-->
+
+        <record id="report_incentive_letter_wo_head_FORM_GHA" model="ir.actions.report">
+            <field name="name">Form FORM_GHA Report</field>
+            <field name="model">cash.incentive.head</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">cash_incentive.form_gha_report</field>
+            <field name="report_file">cash_incentive.form_gha_report</field>
+            <field name="paperformat_id" ref="cash_incentive.paperformat_prc_letter_wo_head_report_ga"/>
+
+        </record>
+
+        <!-- PRC for without head-->
+        <template id="prc_report">
+			<t t-call="web.html_container">
+				<link rel='stylesheet' href="/cash_incentive/static/src/css/custom_report.css" />
+
+                <t t-call="cash_incentive.report_cash_wo_head_layout_header" />
+                <t t-call="web.internal_layout">
+                    <div class="page" style="margin-top:0px;">
+                        <t t-foreach="request.env['cash.incentive.head'].search([('id', '=', incentive_id)], limit=1)" t-as="o">
+                            <t t-if="rpt_name == 'PRC'">
+                                <span t-raw="o.prc_letter_description" />
+                            </t>
+                        </t>
+<!--                            <tr t-foreach="data" t-as="doc">-->
+<!--                                <span t-raw="doc['details']" />-->
+<!--                            </tr>-->
+                    </div>
+                </t>
+            </t>
+        </template>
+
+        <!-- ka for without head-->
+        <template id="form_ka_report">
+			<t t-call="web.html_container">
+				<link rel='stylesheet' href="/cash_incentive/static/src/css/custom_report.css" />
+
+                <t t-call="cash_incentive.report_cash_wo_head_layout_header" />
+                <t t-call="web.internal_layout">
+                    <div class="page" style="margin-top:0px;">
+                        <t t-foreach="request.env['cash.incentive.head'].search([('id', '=', incentive_id)], limit=1)" t-as="o">
+                            <t t-if="rpt_name == 'BASIS_KA'">
+                                <span t-raw="o.form_ka_basis_description" />
+                            </t>
+                        </t>
+<!--                            <tr t-foreach="data" t-as="doc">-->
+<!--                                <span t-raw="doc['details']" />-->
+<!--                            </tr>-->
+                    </div>
+                </t>
+            </t>
+        </template>
+
+        <!-- kha for without head-->
+        <template id="form_kha_report">
+			<t t-call="web.html_container">
+				<link rel='stylesheet' href="/cash_incentive/static/src/css/custom_report.css" />
+
+                <t t-call="cash_incentive.report_cash_wo_head_layout_header" />
+                <t t-call="web.internal_layout">
+                    <div class="page" style="margin-top:0px;">
+                        <t t-foreach="request.env['cash.incentive.head'].search([('id', '=', incentive_id)], limit=1)" t-as="o">
+                            <t t-if="rpt_name == 'BASIS_KHA'">
+                                <span t-raw="o.form_kha_basis_description" />
+                            </t>
+                        </t>
+<!--                            <tr t-foreach="data" t-as="doc">-->
+<!--                                <span t-raw="doc['details']" />-->
+<!--                            </tr>-->
+                    </div>
+                </t>
+            </t>
+        </template>
+
+        <!-- forwarding_letter for without head-->
+        <template id="forwarding_letter_report">
+			<t t-call="web.html_container">
+				<link rel='stylesheet' href="/cash_incentive/static/src/css/custom_report.css" />
+
+                <t t-call="cash_incentive.report_cash_wo_head_layout_header" />
+                <t t-call="web.internal_layout">
+                    <div class="page" style="margin-top:0px;">
+                        <t t-foreach="request.env['cash.incentive.head'].search([('id', '=', incentive_id)], limit=1)" t-as="o">
+                            <t t-if="rpt_name == 'FLBS'">
+                                <span t-raw="o.flbs_letter_description" />
+                            </t>
+                        </t>
+<!--                            <tr t-foreach="data" t-as="doc">-->
+<!--                                <span t-raw="doc['details']" />-->
+<!--                            </tr>-->
+                    </div>
+                </t>
+            </t>
+        </template>
+
+        <!-- forwarding_letter_for_bank_report for without head-->
+        <template id="forwarding_letter_for_bank_report">
+			<t t-call="web.html_container">
+				<link rel='stylesheet' href="/cash_incentive/static/src/css/custom_report.css" />
+
+                <t t-call="cash_incentive.report_cash_wo_head_layout_header" />
+                <t t-call="web.internal_layout">
+                    <div class="page" style="margin-top:0px;">
+                        <t t-foreach="request.env['cash.incentive.head'].search([('id', '=', incentive_id)], limit=1)" t-as="o">
+                            <t t-if="rpt_name == 'FLBK'">
+                                <span t-raw="o.flbk_letter_description" />
+                            </t>
+                        </t>
+<!--                            <tr t-foreach="data" t-as="doc">-->
+<!--                                <span t-raw="doc['details']" />-->
+<!--                            </tr>-->
+                    </div>
+                </t>
+            </t>
+        </template>
+
+        <!-- form_c for without head-->
+        <template id="form_c_report">
+			<t t-call="web.html_container">
+				<link rel='stylesheet' href="/cash_incentive/static/src/css/custom_report.css" />
+
+                <t t-call="cash_incentive.report_cash_wo_head_layout_header" />
+                <t t-call="web.internal_layout">
+                    <div class="page" style="margin-top:0px;">
+                        <t t-foreach="request.env['cash.incentive.head'].search([('id', '=', incentive_id)], limit=1)" t-as="o">
+                            <t t-if="rpt_name == 'FORM_C'">
+                                <span t-raw="o.form_c_description" />
+                            </t>
+                        </t>
+<!--                            <tr t-foreach="data" t-as="doc">-->
+<!--                                <span t-raw="doc['details']" />-->
+<!--                            </tr>-->
+                    </div>
+                </t>
+            </t>
+        </template>
+
+        <!-- form_ga for without head-->
+        <template id="form_ga_report">
+			<t t-call="web.html_container">
+				<link rel='stylesheet' href="/cash_incentive/static/src/css/custom_report.css" />
+
+                <t t-call="cash_incentive.report_cash_wo_head_layout_header" />
+                <t t-call="web.internal_layout">
+                    <div class="page" style="margin-top:0px;">
+                        <t t-foreach="request.env['cash.incentive.head'].search([('id', '=', incentive_id)], limit=1)" t-as="o">
+                            <t t-if="rpt_name == 'FORM_GA'">
+                                <span t-raw="o.form_ga_description" />
+                            </t>
+                        </t>
+<!--                            <tr t-foreach="data" t-as="doc">-->
+<!--                                <span t-raw="doc['details']" />-->
+<!--                            </tr>-->
+                    </div>
+                </t>
+            </t>
+        </template>
+
+        <!-- form_gha for without head-->
+        <template id="form_gha_report">
+			<t t-call="web.html_container">
+				<link rel='stylesheet' href="/cash_incentive/static/src/css/custom_report.css" />
+
+                <t t-call="cash_incentive.report_cash_wo_head_layout_header" />
+                <t t-call="web.internal_layout">
+                    <div class="page" style="margin-top:0px;">
+                        <t t-foreach="request.env['cash.incentive.head'].search([('id', '=', incentive_id)], limit=1)" t-as="o">
+                            <t t-if="rpt_name == 'FORM_GHA'">
+                                <span t-raw="o.form_gha_description" />
+                            </t>
+                        </t>
+<!--                            <tr t-foreach="data" t-as="doc">-->
+<!--                                <span t-raw="doc['details']" />-->
+<!--                            </tr>-->
+                    </div>
+                </t>
+            </t>
+        </template>
+
+<!-- ================= end of without head ======================================================================= -->
+
+<!-- ================= start of with head ======================================================================= -->
+
+        <!-- PRC for with head-->
+        <record id="paperformat_prc_letter_w_head_report_two" model="report.paperformat">
+			<field name="name">Report Format</field>
+            <field name="format">custom</field>
+            <field name="orientation">Portrait</field>
+            <field name="page_width">258</field>
+            <field name="page_height">383</field>
+            <field name="margin_top">40</field>
+            <field name="margin_bottom">7</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_spacing">35</field>
+            <field name="dpi">90</field>
+		</record>
+
+        <!-- PRC for with head-->
+<!--         <report id="report_incentive_letter_w_head_PRC" model="cash.incentive.head"-->
+<!--				string="PRC Report"-->
+<!--				report_type="qweb-pdf"-->
+<!--				file="cash_incentive.prc-report"-->
+<!--				name="cash_incentive.prc-report" menu="False"-->
+<!--                 paperformat="cash_incentive.paperformat_prc_letter_w_head_report_two"-->
+<!--                print_report_name="rpt_name"/>-->
+
+        <record id="report_incentive_letter_w_head_PRC" model="ir.actions.report">
+            <field name="name">PRC Report</field>
+            <field name="model">cash.incentive.head</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">cash_incentive.prc-report</field>
+            <field name="report_file">cash_incentive.prc-report</field>
+            <field name="paperformat_id" ref="cash_incentive.paperformat_prc_letter_w_head_report_two"/>
+            <field name="print_report_name">rpt_name</field>
+        </record>
+
+         <!-- ka for without head-->
+<!--         <report id="report_incentive_letter_w_head_BASIS_KA" model="cash.incentive.head"-->
+<!--				string="Form Ka Report"-->
+<!--				report_type="qweb-pdf"-->
+<!--				file="cash_incentive.form-ka-report"-->
+<!--				name="cash_incentive.form-ka-report"-->
+<!--                 menu="False"-->
+<!--                 paperformat="cash_incentive.paperformat_prc_letter_w_head_report_two"/>-->
+
+        <record id="report_incentive_letter_w_head_BASIS_KA" model="ir.actions.report">
+            <field name="name">Form Ka Report</field>
+            <field name="model">cash.incentive.head</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">cash_incentive.form-ka-report</field>
+            <field name="report_file">cash_incentive.form-ka-report</field>
+            <field name="paperformat_id" ref="cash_incentive.paperformat_prc_letter_w_head_report_two"/>
+        </record>
+
+        <!-- kha for with head-->
+<!--         <report id="report_incentive_letter_w_head_BASIS_KHA" model="cash.incentive.head"-->
+<!--				string="Form Kha Report"-->
+<!--				report_type="qweb-pdf"-->
+<!--				file="cash_incentive.form-kha-report"-->
+<!--				name="cash_incentive.form-kha-report"-->
+<!--                 menu="False"-->
+<!--                 paperformat="cash_incentive.paperformat_prc_letter_w_head_report_two"/>-->
+
+        <record id="report_incentive_letter_w_head_BASIS_KHA" model="ir.actions.report">
+            <field name="name">Form Kha Report</field>
+            <field name="model">cash.incentive.head</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">cash_incentive.form-kha-report</field>
+            <field name="report_file">cash_incentive.form-kha-report</field>
+            <field name="paperformat_id" ref="cash_incentive.paperformat_prc_letter_w_head_report_two"/>
+        </record>
+
+        <!-- FLBS for with head-->
+<!--         <report id="report_incentive_letter_w_head_FLBS" model="cash.incentive.head"-->
+<!--				string="Form FLBS Report"-->
+<!--				report_type="qweb-pdf"-->
+<!--				file="cash_incentive.forwarding-letter-report"-->
+<!--				name="cash_incentive.forwarding-letter-report"-->
+<!--                 menu="False"-->
+<!--                 paperformat="cash_incentive.paperformat_prc_letter_w_head_report_two"/>-->
+
+        <record id="report_incentive_letter_w_head_FLBS" model="ir.actions.report">
+            <field name="name">Form FLBS Report</field>
+            <field name="model">cash.incentive.head</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">cash_incentive.forwarding-letter-report</field>
+            <field name="report_file">cash_incentive.forwarding-letter-report</field>
+            <field name="paperformat_id" ref="cash_incentive.paperformat_prc_letter_w_head_report_two"/>
+        </record>
+
+        <!-- FLBK for with head-->
+<!--         <report id="report_incentive_letter_w_head_FLBK" model="cash.incentive.head"-->
+<!--				string="Form FLBK Report"-->
+<!--				report_type="qweb-pdf"-->
+<!--				file="cash_incentive.forwarding-letter-for-bank-report"-->
+<!--				name="cash_incentive.forwarding-letter-for-bank-report"-->
+<!--                 menu="False"-->
+<!--                 paperformat="cash_incentive.paperformat_prc_letter_w_head_report_two"/>-->
+
+        <record id="report_incentive_letter_w_head_FLBK" model="ir.actions.report">
+            <field name="name">Form FLBK Report</field>
+            <field name="model">cash.incentive.head</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">cash_incentive.forwarding-letter-for-bank-report</field>
+            <field name="report_file">cash_incentive.forwarding-letter-for-bank-report</field>
+            <field name="paperformat_id" ref="cash_incentive.paperformat_prc_letter_w_head_report_two"/>
+        </record>
+
+        <!-- FORM_C for with head-->
+<!--         <report id="report_incentive_letter_w_head_FORM_C" model="cash.incentive.head"-->
+<!--				string="Form FORM_C Report"-->
+<!--				report_type="qweb-pdf"-->
+<!--				file="cash_incentive.form-c-report"-->
+<!--				name="cash_incentive.form-c-report"-->
+<!--                 menu="False"-->
+<!--                 paperformat="cash_incentive.paperformat_prc_letter_w_head_report_two"/>-->
+
+        <record id="report_incentive_letter_w_head_FORM_C" model="ir.actions.report">
+            <field name="name">Form FORM_C Report</field>
+            <field name="model">cash.incentive.head</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">cash_incentive.form-c-report</field>
+            <field name="report_file">cash_incentive.form-c-report</field>
+            <field name="paperformat_id" ref="cash_incentive.paperformat_prc_letter_w_head_report_two"/>
+        </record>
+
+        <!-- FORM_GA for with head-->
+<!--         <report id="report_incentive_letter_w_head_FORM_GA" model="cash.incentive.head"-->
+<!--				string="Form FORM_GA Report"-->
+<!--				report_type="qweb-pdf"-->
+<!--				file="cash_incentive.form-ga-report"-->
+<!--				name="cash_incentive.form-ga-report"-->
+<!--                 menu="False"-->
+<!--                 paperformat="cash_incentive.paperformat_prc_letter_w_head_report_two"/>-->
+
+        <record id="report_incentive_letter_w_head_FORM_GA" model="ir.actions.report">
+            <field name="name">Form FORM_GA Report</field>
+            <field name="model">cash.incentive.head</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">cash_incentive.form-ga-report</field>
+            <field name="report_file">cash_incentive.form-ga-report</field>
+            <field name="paperformat_id" ref="cash_incentive.paperformat_prc_letter_w_head_report_two"/>
+        </record>
+
+        <!-- FORM_GHA for with head-->
+<!--         <report id="report_incentive_letter_w_head_FORM_GHA" model="cash.incentive.head"-->
+<!--				string="Form FORM_GHA Report"-->
+<!--				report_type="qweb-pdf"-->
+<!--				file="cash_incentive.form-gha-report"-->
+<!--				name="cash_incentive.form-gha-report"-->
+<!--                 menu="False"-->
+<!--                 paperformat="cash_incentive.paperformat_prc_letter_w_head_report_two"/>-->
+
+        <record id="report_incentive_letter_w_head_FORM_GHA" model="ir.actions.report">
+            <field name="name">Form FORM_GHA Report</field>
+            <field name="model">cash.incentive.head</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">cash_incentive.form-gha-report</field>
+            <field name="report_file">cash_incentive.form-gha-report</field>
+            <field name="paperformat_id" ref="cash_incentive.paperformat_prc_letter_w_head_report_two"/>
+        </record>
+
+          <!-- PRC for with head-->
+        <template id="prc-report">
+			<t t-call="web.html_container">
+				<link rel='stylesheet' href="/cash_incentive/static/src/css/custom_report.css" />
+
+                <t t-call="web.internal_layout">
+                    <div class="page" style="margin-top:0px;">
+                        <t t-foreach="request.env['cash.incentive.head'].search([('id', '=', incentive_id)], limit=1)" t-as="o">
+                            <t t-if="rpt_name == 'PRC'">
+                                <span t-raw="o.prc_letter_description" />
+                            </t>
+                        </t>
+<!--                            <tr t-foreach="data" t-as="doc">-->
+<!--                                <span t-raw="doc['details']" />-->
+<!--                            </tr>-->
+                    </div>
+                </t>
+            </t>
+        </template>
+
+        <!-- ka for with head-->
+        <template id="form-ka-report">
+			<t t-call="web.html_container">
+				<link rel='stylesheet' href="/cash_incentive/static/src/css/custom_report.css" />
+
+                <t t-call="web.internal_layout">
+                    <div class="page" style="margin-top:0px;">
+                        <t t-foreach="request.env['cash.incentive.head'].search([('id', '=', incentive_id)], limit=1)" t-as="o">
+                            <t t-if="rpt_name == 'BASIS_KA'">
+                                <span t-raw="o.form_ka_basis_description" />
+                            </t>
+                        </t>
+<!--                            <tr t-foreach="data" t-as="doc">-->
+<!--                                <span t-raw="doc['details']" />-->
+<!--                            </tr>-->
+                    </div>
+                </t>
+            </t>
+        </template>
+
+        <!-- kha for with head-->
+        <template id="form-kha-report">
+			<t t-call="web.html_container">
+				<link rel='stylesheet' href="/cash_incentive/static/src/css/custom_report.css" />
+
+                <t t-call="web.internal_layout">
+                    <div class="page" style="margin-top:0px;">
+                        <t t-foreach="request.env['cash.incentive.head'].search([('id', '=', incentive_id)], limit=1)" t-as="o">
+                            <t t-if="rpt_name == 'BASIS_KHA'">
+                                <span t-raw="o.form_kha_basis_description" />
+                            </t>
+                        </t>
+<!--                            <tr t-foreach="data" t-as="doc">-->
+<!--                                <span t-raw="doc['details']" />-->
+<!--                            </tr>-->
+                    </div>
+                </t>
+            </t>
+        </template>
+
+        <!-- forwarding_letter for with head-->
+        <template id="forwarding-letter-report">
+			<t t-call="web.html_container">
+				<link rel='stylesheet' href="/cash_incentive/static/src/css/custom_report.css" />
+
+                <t t-call="web.internal_layout">
+                    <div class="page" style="margin-top:0px;">
+                        <t t-foreach="request.env['cash.incentive.head'].search([('id', '=', incentive_id)], limit=1)" t-as="o">
+                            <t t-if="rpt_name == 'FLBS'">
+                                <span t-raw="o.flbs_letter_description" />
+                            </t>
+                        </t>
+<!--                            <tr t-foreach="data" t-as="doc">-->
+<!--                                <span t-raw="doc['details']" />-->
+<!--                            </tr>-->
+                    </div>
+                </t>
+            </t>
+        </template>
+
+        <!-- forwarding_letter_for_bank_report for with head-->
+        <template id="forwarding-letter-for-bank-report">
+			<t t-call="web.html_container">
+				<link rel='stylesheet' href="/cash_incentive/static/src/css/custom_report.css" />
+
+                <t t-call="web.internal_layout">
+                    <div class="page" style="margin-top:0px;">
+                        <t t-foreach="request.env['cash.incentive.head'].search([('id', '=', incentive_id)], limit=1)" t-as="o">
+                            <t t-if="rpt_name == 'FLBK'">
+                                <span t-raw="o.flbk_letter_description" />
+                            </t>
+                        </t>
+<!--                            <tr t-foreach="data" t-as="doc">-->
+<!--                                <span t-raw="doc['details']" />-->
+<!--                            </tr>-->
+                    </div>
+                </t>
+            </t>
+        </template>
+
+        <!-- form_c for with head-->
+        <template id="form-c-report">
+			<t t-call="web.html_container">
+				<link rel='stylesheet' href="/cash_incentive/static/src/css/custom_report.css" />
+
+                <t t-call="web.internal_layout">
+                    <div class="page" style="margin-top:0px;">
+                        <t t-foreach="request.env['cash.incentive.head'].search([('id', '=', incentive_id)], limit=1)" t-as="o">
+                            <t t-if="rpt_name == 'FORM_C'">
+                                <span t-raw="o.form_c_description" />
+                            </t>
+                        </t>
+<!--                            <tr t-foreach="data" t-as="doc">-->
+<!--                                <span t-raw="doc['details']" />-->
+<!--                            </tr>-->
+                    </div>
+                </t>
+            </t>
+        </template>
+
+        <!-- form_ga for with head-->
+        <template id="form-ga-report">
+			<t t-call="web.html_container">
+				<link rel='stylesheet' href="/cash_incentive/static/src/css/custom_report.css" />
+
+                <t t-call="web.internal_layout">
+                    <div class="page" style="margin-top:0px;">
+                        <t t-foreach="request.env['cash.incentive.head'].search([('id', '=', incentive_id)], limit=1)" t-as="o">
+                            <t t-if="rpt_name == 'FORM_GA'">
+                                <span t-raw="o.form_ga_description" />
+                            </t>
+                        </t>
+<!--                            <tr t-foreach="data" t-as="doc">-->
+<!--                                <span t-raw="doc['details']" />-->
+<!--                            </tr>-->
+                    </div>
+                </t>
+            </t>
+        </template>
+
+        <!-- form_gha for with head-->
+        <template id="form-gha-report">
+			<t t-call="web.html_container">
+				<link rel='stylesheet' href="/cash_incentive/static/src/css/custom_report.css" />
+
+                <t t-call="web.internal_layout">
+                    <div class="page" style="margin-top:0px;">
+                        <t t-foreach="request.env['cash.incentive.head'].search([('id', '=', incentive_id)], limit=1)" t-as="o">
+                            <t t-if="rpt_name == 'FORM_GHA'">
+                                <span t-raw="o.form_gha_description" />
+                            </t>
+                        </t>
+<!--                            <tr t-foreach="data" t-as="doc">-->
+<!--                                <span t-raw="doc['details']" />-->
+<!--                            </tr>-->
+                    </div>
+                </t>
+            </t>
+        </template>
+
+<!-- ================= end of with head ======================================================================= -->
+
+
+        <template id="cash_incentive.report_cash_wo_head_layout_header">
+			<div class="header">
+				<div class="row">
+
+<!--					<div class="col-xs-6 text-left">-->
+<!--                        <strong>-->
+<!--                            <div t-field="company.name" style="font-size:25px;"/>-->
+<!--                        </strong>-->
+<!--                        <span t-field="company.street"/>-->
+<!--                        <span t-field="company.street2"/>-->
+<!--                        <span t-field="company.city"/>-->
+<!--                        <span t-field="company.zip"/>-->
+<!--                        <br/>-->
+<!--                        Phone:-->
+<!--                        <span t-field="company.phone"/>-->
+<!--                        <br/>-->
+<!--                        Fax:-->
+<!--&lt;!&ndash;                        <span t-field="company.fax"/>&ndash;&gt;-->
+<!--                        <br/>-->
+<!--                        Web:-->
+<!--                        <span t-field="company.website"/>-->
+<!--                    </div>-->
+				</div>
+			</div>
+		</template>
+
+        <template id="report_cash_letter_w_head_layout_header">
+			<div style="margin-top:80px" class="header">
+				<div class="row">
+                    <t t-foreach="request.env['res.company'].search([('id', '=', 1)])" t-as="o">
+<!--                        <div class="col-xs-2 mr-4 text-left">-->
+<!--                            <img t-if="o.logo" t-att-src="image_data_uri(o.logo)"-->
+<!--                                     style="max-height:150px;max-width:110px" alt="Company Logo"/>-->
+<!--    &lt;!&ndash;						<img t-if="company.logo" t-att-src="'data:image/png;base64,%s' % company.logo"&ndash;&gt;-->
+<!--    &lt;!&ndash;							style="max-height:90px;max-width:110px" />&ndash;&gt;-->
+<!--                        </div>-->
+
+                        <div  class="col-xs-6 text-left">
+                            <strong>
+                                <div t-esc="o.name" style="font-size:25px;"/>
+                            </strong>
+                            <span t-esc="o.street"/>
+                            <span t-esc="o.street2"/>
+                            <span t-esc="o.city"/>
+                            <span t-esc="o.zip"/>
+                            <br/>
+                            Phone:
+                            <span t-esc="o.phone"/>
+                            <br/>
+                            Fax:
+    <!--                        <span t-field="company.fax"/>-->
+                            <br/>
+                            Web:
+                            <span t-esc="o.website"/>
+                        </div>
+                    </t>
+				</div>
+			</div>
+		</template>
+
+    </data>
+</odoo>

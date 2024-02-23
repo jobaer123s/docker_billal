@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+    <data>
+        <record id="view_journal_form" model="ir.ui.view">
+            <field name="name">journal.wizard.form</field>
+            <field name="model">journal.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Swift Message">
+                    <group>
+                        <group>
+                            <field invisible="type == '1'" name="swift_id" readonly="1" options="{'no_open':True,'no_create':True}"/>
+                            <field name="bank_id" readonly="1" force_save="1" options="{'no_open':True,'no_create':True}"/>
+                            <field name="swift_currency_id" readonly="1" force_save="1" options="{'no_open':True,'no_create':True}"/>
+                            <field name="partner_id" readonly="1" force_save="1" options="{'no_open':True,'no_create':True}"/>
+                            <field name="encashment_bank_id" readonly="1" force_save="1" options="{'no_open':True,'no_create':True}"/>
+                            <field name="encashment_date" readonly="1" force_save="1" options="{'no_open':True,'no_create':True}"/>
+                            <!--<br/>-->
+                            <field name="journal_id" domain="[('type', '=', 'bank')]" required="1" options="{'no_open':True,'no_create':True}"/>
+                            <field name="type"  invisible="1" />
+
+                            <field name="encashment_acc_id" options="{'no_open':True,'no_create':True}" required="1"/>
+                            <field name="bank_charge_acc_id" options="{'no_open':True,'no_create':True}"/>
+                            <!--<field name="other_charge_acc_id" options="{'no_open':True,'no_create':True}"/>-->
+                            <field name="erq_acc_id" options="{'no_open':True,'no_create':True}"/>
+
+<!--                            <field name="partner_cr_acc_id" readonly="1" options="{'no_open':True,'no_create':True}"/>-->
+<!--                            <field name="bank_cash_dr_acc_id" required="1" options="{'no_open':True,'no_create':True}"/>-->
+<!--                            <field name="fc_gain_loss_acc_id" domain="[('is_foreign_gain_loss_acc', '=', True)]" options="{'no_open':True,'no_create':True}"/>-->
+                        </group>
+                        <group>
+                            <!--<field name="invoice_amt" readonly="1" force_save="1"/>-->
+                            <!--<field name="invoice_amt_bdt" readonly="1" force_save="1"/>-->
+                            <!--<field name="swift_amt" readonly="1" force_save="1"/>-->
+
+                            <field name="encashment_rate_bdt" readonly="1" force_save="1"/>
+                            <field name="encashment_rate_amnt" readonly="1" force_save="1"/>
+                            <field name="encashment_charge" readonly="1" force_save="1"/>
+                            <field name="encashment_charge_bdt" readonly="1" force_save="1"/>
+                            <field name="is_erq_applicable" readonly="1" force_save="1"/>
+                            <field name="inter_bank_rate_bdt" readonly="1" force_save="1" invisible="is_erq_applicable == False"/>
+                            <field name="erq_amount_bdt" readonly="1" force_save="1" invisible="is_erq_applicable == False"/>
+                            <field name="bdt_encashment_amount" readonly="1" force_save="1" invisible="is_erq_applicable == False"/>
+                            <br/>
+<!--                            comment-for-upgrade-->
+<!--                            <field name="fc_gain_loss_acc_id" domain="[('is_foreign_gain_loss_acc', '=', True)]" options="{'no_open':True,'no_create':True}"/>-->
+                            <field name="fc_gain_loss_acc_id" options="{'no_open':True,'no_create':True}"/>
+                            <field name="difference_amnt_bdt" readonly="1" force_save="1"/>
+                        </group>
+                    </group>
+                    <field style="color:#fff" name="invoice_line_ids">
+                        <tree create="false" edit="false" delete="false" string="Invoice Lines">
+                            <field style="pointer-events:none;" name="invoice_id" domain="[('state', '=', 'posted'),('partner_id', '=', parent.partner_id),('move_type', '=', 'out_invoice')]" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}"/>
+                            <field style="pointer-events:none;" name="invoice_date" />
+                            <field style="pointer-events:none;" name="swift_date" readonly="1" force_save="1"/>
+                            <field style="pointer-events:none;" name="encashment_date" readonly="1" force_save="1"/>
+                            <field style="pointer-events:none;" name="od_sight_rate" />
+
+                            <field style="pointer-events:none;" name="invoice_qty_str" />
+                            <field style="pointer-events:none;" name="currency_id" readonly="1" force_save="1"/>
+                            <field style="pointer-events:none;" string="Invoice (FC)" name="invoice_amt" sum="invoice_amt"/>
+                            <field style="pointer-events:none;" string="Invoice Rate (BDT)" name="usd_rate" sum="usd_rate"/>
+                            <field style="pointer-events:none;" string="Invoice (BDT)" name="invoice_amt_bdt" sum="invoice_amt_bdt"/>
+                            <field style="pointer-events:none;" string="Encashment (FC)" name="swift_amt"  sum="invoice_amt" />
+                            <field style="pointer-events:none;" string="Encashment Rate(BDT)" name="encashment_rate_bdt"  sum="encashment_rate_bdt" />
+                            <field style="pointer-events:none;" string="Encashment (BDT)" name="encashment_amt_bdt"  sum="encashment_amt_bdt" />
+                        </tree>
+                    </field>
+                    <footer>
+                        <button invisible="type != '1'"  name="action_create_journal" confirm="Are you sure you want to create Journal?" string="Create Journal" type="object" class="btn-primary"/>
+                        <button invisible="type != '1'" name="action_create_journal_multiple" confirm="Are you sure you want to create Journal?" string="Create Journal" type="object" class="btn-primary"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

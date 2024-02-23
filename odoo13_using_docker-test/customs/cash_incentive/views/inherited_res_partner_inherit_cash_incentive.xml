@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<odoo>
+    <record id='inherited_res_partner_inherit_cash_incentive' model='ir.ui.view'>
+        <field name='name'>inherited.res.partner.inherit.cash.incentive</field>
+        <field name='model'>res.partner</field>
+        <field name='inherit_id' ref='base.view_partner_form'/>
+        <field name='arch' type='xml'>
+
+            <xpath expr="//field[@name='type']" position="before">
+                <field name="mobile_customer_type" string="Type" required="1"/>
+                <field name="vendor_type" required="1"/>
+                <field name="division_id"
+                       options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}"
+                       invisible="vendor_type  != 'local'"/>
+                <field name="district_id"
+                       options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}"
+                       invisible="vendor_type  != 'local'"
+                       domain="[('division_id', '=', division_id)]"/>
+                <field name="thana_id"
+                       options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}"
+                       invisible="vendor_type  != 'local'"
+                       domain="[('district_id', '=', district_id)]"/>
+
+                <field name="postcode_id"
+                       options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}"
+                       invisible="vendor_type  != 'local'" domain="[('thana_id', '=', thana_id)]"/>
+
+                <field name="partner_code" readonly="1"/>
+                <field name="categ_id"
+                       options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}"/>
+            </xpath>
+
+
+            <!--            <xpath expr="//field[@name='division_id']" position="replace">-->
+<!--                <field name="division_id" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}" invisible="vendor_type  != 'local'"/>-->
+<!--            </xpath>-->
+<!--            <xpath expr="//field[@name='district_id']" position="replace">-->
+<!--                <field name="district_id" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}" invisible="vendor_type  != 'local'" domain="[('division_id', '=', division_id)]"/>-->
+<!--            </xpath>-->
+<!--            <xpath expr="//field[@name='thana_id']" position="replace">-->
+<!--                <field name="thana_id" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}" invisible="vendor_type  != 'local'" domain="[('district_id', '=', district_id)]"/>-->
+<!--            </xpath>-->
+<!--            <xpath expr="//field[@name='postcode_id']" position="replace">-->
+<!--                <field name="postcode_id" options="{'no_open':True,'no_create':1,'no_create_edit':1, 'no_quick_create': True}" invisible="vendor_type  != 'local'" domain="[('thana_id', '=', thana_id)]"/>-->
+<!--            </xpath>-->
+            <xpath expr="//field[@name='mobile']" position="attributes">
+                    <attribute name="required">False</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

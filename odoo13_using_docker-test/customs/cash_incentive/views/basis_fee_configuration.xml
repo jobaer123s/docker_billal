@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_basis_fee_configuration_from" model="ir.ui.view">
+        <field name="name">basis.fee.configuration.form</field>
+        <field name="model">basis.fee.configuration</field>
+        <field name="arch" type="xml">
+            <form string="Basis Fee Configuration Form">
+                <sheet>
+<!--                    <header>-->
+<!--                        <button name="action_print_with_head"-->
+<!--							string="Print With Letter Head" type="object"/>-->
+<!--                    </header>-->
+                    <group>
+                        <group>
+                            <field name="name" readonly="1" force_save="1"/>
+                            <field name="create_date" readonly="1" force_save="1"/>
+                            <field name="create_uid" readonly="1" force_save="1"/>
+                            <field name="active"/>
+                        </group>
+                        <group>
+                            <separator/>
+                            <field name="max_amount" required="1"/>
+                            <field name="extend_amount_range" required="1"/>
+                            <field name="extend_amount" required="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Fee Lines">
+                             <field name="basis_fee_line_ids" >
+                                <tree string="Fee Lines" editable="bottom">
+<!--                                     <field name="sequence" widget='handle'/>-->
+                                     <field name="from_amount" required="1"/>
+                                     <field name="to_amount" required="1"/>
+                                     <field name="fee_amount" required="1"/>
+                                 </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers" />
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+    <!--Tree View -->
+    <record id="view_basis_fee_configuration_tree" model="ir.ui.view">
+         <field name="name">basis.fee.configuration.tree</field>
+         <field name="model">basis.fee.configuration</field>
+         <field name="arch" type="xml">
+             <tree string="Cash Incentive List">
+                 <field name="name" />
+                 <field name="max_amount" />
+                 <field name="extend_amount_range" />
+                 <field name="extend_amount" />
+                 <field name="create_uid" />
+                 <field name="create_date" />
+                 <field name="active" required="1"/>
+             </tree>
+         </field>
+    </record>
+
+    <!-- Filter -->
+    <record id="view_basis_fee_configuration_filter" model="ir.ui.view">
+        <field name="name">view.basis.fee.configuration.filter</field>
+        <field name="model">basis.fee.configuration</field>
+        <field name="priority" eval="15"/>
+        <field name="arch" type="xml">
+            <search string="">
+                <field name="name" filter_domain="[('name', 'ilike', self)]"/>
+           </search>
+        </field>
+    </record>
+
+    <!--Action -->
+    <record id="cash_incentive_basis_fee_configuration_action" model="ir.actions.act_window">
+        <field name="name">Cash Incentive Basis Fee Configuration</field>
+        <field name="res_model">basis.fee.configuration</field>
+        <field name="view_mode">tree,form</field>
+          <field name="domain">[]</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Please Create Cash Incentive Basis Fee Configuration.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="sub_menu_cash_incentive_basis_fee_configuration" name="Basis Fee Configuration" action="cash_incentive_basis_fee_configuration_action" parent="menu_configuration_head" sequence="2"/>
+
+</odoo>
